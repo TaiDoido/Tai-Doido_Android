@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/frankjunior/Dropbox/development/workspace/workspace_android/TaiDoido/app/build/intermediates/incremental-classes/debug/classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="649f8608bde45fb2a43a720d0711c2f6630560ef">
+        <dex dex="/home/frankjunior/Dropbox/development/workspace/workspace_android/TaiDoido/app/build/intermediates/pre-dexed/debug/classes_f2362545236006437274fdcd6557e696949df12e.jar" />
+    </item>
+
+</items>
