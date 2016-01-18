@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,6 +22,7 @@ import com.example.frankjunior.taidoido.util.MyLog;
 
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 public class ActivityPostsList extends AppCompatActivity implements PostListAdapter.AoClicarNoPostListener {
@@ -32,27 +34,48 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
     private TextView mTextMensagem;
     private RecyclerView.LayoutManager mLayoutManager;
     private ProgressBar mProgressBar;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts_list);
 
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         mTextMensagem = (TextView) findViewById(android.R.id.empty);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mRecycleView = (RecyclerView) findViewById(R.id.list);
         mRecycleView.setHasFixedSize(true);
-        mRecycleView.setItemAnimator(new DefaultItemAnimator());
+        mRecycleView.setItemAnimator(new SlideInLeftAnimator());
 
-        mLayoutManager = new LinearLayoutManager(ActivityPostsList.this);
-
+        // esse if signfica que quando o aparelho tiver em portrait o layout do RecyclerView é LinearLayout
+        // e quando tiver em Landscape o layout é um GridLayout
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            mLayoutManager = new LinearLayoutManager(this);
+            mLayoutManager = new LinearLayoutManager(ActivityPostsList.this);
         } else {
-            mLayoutManager = new GridLayoutManager(this, COLUMNS_NUMBER);
+            mLayoutManager = new GridLayoutManager(ActivityPostsList.this, COLUMNS_NUMBER);
         }
         mRecycleView.setLayoutManager(mLayoutManager);
 
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                DispararTask();
+            }
+        });
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        // aqui são as validações pra disparar a task
+        DispararTask();
+    }
+
+    private void DispararTask() {
         if (mTask == null) {
             if (HttpUtil.hasConnectionAvailable(ActivityPostsList.this)) {
                 startDownload();
@@ -113,7 +136,9 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
                     MyLog.print("image = "+posts.get(i).getImage());
                     MyLog.print("========================");
                 }
+                swipeContainer.setRefreshing(false);
                 mAdapter.notifyDataSetChanged();
+                mTask = null;
             } else {
                 mTextMensagem.setText(getString(R.string.posts_error));
             }
