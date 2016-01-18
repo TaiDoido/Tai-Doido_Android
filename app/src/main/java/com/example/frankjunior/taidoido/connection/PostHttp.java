@@ -27,7 +27,7 @@ public class PostHttp {
     private static final String KEY_TITLE = "title";
     private static final String KEY_FEATURED_IMAGE = "featured_image";
     private static final String KEY_AUTHOR = "author";
-    private static final String KEY_AUTHOR_NAME = "name";
+    private static final String KEY_AUTHOR_NAME = "nickname";
     private static final String KEY_FEATURED_IMAGE_GUID = "guid";
     private static final String KEY_DATE = "date";
 
