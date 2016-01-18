@@ -23,7 +23,13 @@ public class PostHttp {
     private static final String BLOG_URL = "http://frankjunior.com.br/blog";
     private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/wp-json/posts?filter[post_status]=publish&filter[posts_per_page]="+ POST_PER_PAGE +"&page="+ pageNumber +"&filter[orderby]=date&filter[order]=desc";
 
-    private static String KEY_TITLE = "title";
+    // Constants: tags from JSON object
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_FEATURED_IMAGE = "featured_image";
+    private static final String KEY_AUTHOR = "author";
+    private static final String KEY_AUTHOR_NAME = "name";
+    private static final String KEY_FEATURED_IMAGE_GUID = "guid";
+    private static final String KEY_DATE = "date";
 
     public static List<Post> carregarBlogJson() {
         try {
@@ -55,8 +61,17 @@ public class PostHttp {
     private static Post entryFromJSON(JSONObject jsonEntry) throws JSONException {
         Post post = new Post();
         String title = jsonEntry.getString(KEY_TITLE);
+        String author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
+        String date = jsonEntry.getString(KEY_DATE);
+        String image = null;
+        if(!jsonEntry.isNull(KEY_FEATURED_IMAGE)){
+            image = jsonEntry.getJSONObject(KEY_FEATURED_IMAGE).getString(KEY_FEATURED_IMAGE_GUID);
+        }
 
         post.setTitle(title);
+        post.setImage(image);
+        post.setAuthor(author);
+        post.setDate(date);
         return post;
     }
 

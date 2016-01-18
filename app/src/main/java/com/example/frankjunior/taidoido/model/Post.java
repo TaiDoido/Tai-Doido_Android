@@ -9,6 +9,8 @@ public class Post implements Serializable {
 
     private String title;
     private String image;
+    private String author;
+    private String date;
 
     public String getTitle() {
         return title;
@@ -16,5 +18,29 @@ public class Post implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

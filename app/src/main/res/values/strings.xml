@@ -6,4 +6,5 @@
     <!-- Mensagens de erro -->
     <string name="without_connection">Sem conexão</string>
     <string name="posts_error">Falha ao obter posts</string>
+    <string name="date">date: %s</string>
 </resources>
