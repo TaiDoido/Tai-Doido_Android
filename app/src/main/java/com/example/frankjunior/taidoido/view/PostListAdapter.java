@@ -1,7 +1,6 @@
 package com.example.frankjunior.taidoido.view;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +12,7 @@ import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.model.Post;
 import com.squareup.picasso.Picasso;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by frankjunior on 18/01/16.
@@ -26,28 +21,15 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostsV
 
     private Context mContext;
     private List<Post> mPosts;
-    private AoClicarNoPostListener mListener;
+    private OnClickPostListener mListener;
 
     public PostListAdapter(Context context, List<Post> posts) {
         mContext = context;
         mPosts = posts;
     }
 
-    public void setAoClicarNoPostListener(AoClicarNoPostListener l){
+    public void setAoClicarNoPostListener(OnClickPostListener l){
         mListener = l;
-    }
-
-    @NonNull
-    private String formatDate(String date) {
-        Date dateJson = null;
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            dateJson = sdf.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        String format = SimpleDateFormat.getDateTimeInstance().format(dateJson);
-        return mContext.getString(R.string.date, format);
     }
 
     @Override
@@ -61,7 +43,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostsV
                 if(mListener != null){
                     PostsViewHolder vh = (PostsViewHolder) view.getTag();
                     int position = vh.getPosition();
-                    mListener.aoClicarNoPost(view, position, mPosts.get(position));
+                    mListener.onClickPost(view, position, mPosts.get(position));
                 }
             }
         });
@@ -75,8 +57,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostsV
         Picasso.with(mContext).load(post.getImage()).into(holder.imgCapa);
         holder.txtTitulo.setText(post.getTitle());
         holder.txtAutores.setText(post.getAuthor());
-        String date = formatDate(post.getDate());
-        holder.txtDate.setText(date);
+        holder.txtDate.setText(post.getDate());
     }
 
     @Override
@@ -84,8 +65,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostsV
         return mPosts != null ? mPosts.size() : 0;
     }
 
-    public interface AoClicarNoPostListener {
-        void aoClicarNoPost(View v, int position, Post post);
+    public interface OnClickPostListener {
+        void onClickPost(View v, int position, Post post);
     }
 
     static class PostsViewHolder extends RecyclerView.ViewHolder {

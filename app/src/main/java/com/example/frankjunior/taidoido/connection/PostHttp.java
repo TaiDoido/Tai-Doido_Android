@@ -1,6 +1,7 @@
 package com.example.frankjunior.taidoido.connection;
 
 import com.example.frankjunior.taidoido.model.Post;
+import com.example.frankjunior.taidoido.util.MyLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,16 +20,16 @@ import java.util.List;
 public class PostHttp {
 
     private static int pageNumber = 1;
-    private static final int POST_PER_PAGE = 10;
     private static final String BLOG_URL = "http://frankjunior.com.br/blog";
-    private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/wp-json/posts?filter[post_status]=publish&filter[posts_per_page]="+ POST_PER_PAGE +"&page="+ pageNumber +"&filter[orderby]=date&filter[order]=desc";
+    private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
 
     // Constants: tags from JSON object
+    private static final String KEY_POSTS = "posts";
+    private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
-    private static final String KEY_FEATURED_IMAGE = "featured_image";
+    private static final String KEY_FEATURED_IMAGE = "thumbnail";
     private static final String KEY_AUTHOR = "author";
     private static final String KEY_AUTHOR_NAME = "nickname";
-    private static final String KEY_FEATURED_IMAGE_GUID = "guid";
     private static final String KEY_DATE = "date";
 
     public static List<Post> carregarBlogJson() {
@@ -49,30 +50,44 @@ public class PostHttp {
 
     private static List<Post> lerJsonBlog(String json) throws JSONException {
         List<Post> listaDePosts = new ArrayList<Post>();
-        JSONArray jsonArray = new JSONArray(json);
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonEntry = jsonArray.getJSONObject(i);
+        JSONObject jsonObject = new JSONObject(json);
+        JSONArray postsJson = jsonObject.getJSONArray(KEY_POSTS);
+        for (int i = 0; i < postsJson.length(); i++) {
+            JSONObject jsonEntry = postsJson.getJSONObject(i);
             listaDePosts.add(entryFromJSON(jsonEntry));
         }
-
         return listaDePosts;
     }
 
-    private static Post entryFromJSON(JSONObject jsonEntry) throws JSONException {
+    private static Post entryFromJSON(JSONObject jsonEntry) {
         Post post = new Post();
-        String title = jsonEntry.getString(KEY_TITLE);
-        String author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
-        String date = jsonEntry.getString(KEY_DATE);
+        String id = null;
+        String title = null;
+        String author = null;
+        String date = null;
         String image = null;
-        if(!jsonEntry.isNull(KEY_FEATURED_IMAGE)){
-            image = jsonEntry.getJSONObject(KEY_FEATURED_IMAGE).getString(KEY_FEATURED_IMAGE_GUID);
+        try {
+        id = jsonEntry.getString(KEY_ID);
+        title = jsonEntry.getString(KEY_TITLE);
+        author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
+        date = jsonEntry.getString(KEY_DATE);
+        image = jsonEntry.getString(KEY_FEATURED_IMAGE);
+        } catch (JSONException e){
+            /*
+                Sempre vai cair nesse catch enquanto tiver testando,
+                pq nem sempre, o "image" existe.
+                Mas no cenário real, ele não vai cair aqui,
+                pq todos os posts vão ter featured image
+             */
+            e.printStackTrace();
+        } finally {
+            post.setId(id);
+            post.setTitle(title);
+            post.setImage(image);
+            post.setAuthor(author);
+            post.setDate(date);
+            return post;
         }
-
-        post.setTitle(title);
-        post.setImage(image);
-        post.setAuthor(author);
-        post.setDate(date);
-        return post;
     }
 
     private static String bytesParaString(InputStream is) throws IOException {

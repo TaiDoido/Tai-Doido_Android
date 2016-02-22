@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +24,7 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class ActivityPostsList extends AppCompatActivity implements PostListAdapter.AoClicarNoPostListener {
+public class ActivityPostsList extends AppCompatActivity implements PostListAdapter.OnClickPostListener {
 
     private static final int COLUMNS_NUMBER = 2;
     private PostTask mTask;
@@ -103,7 +102,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
     }
 
     @Override
-    public void aoClicarNoPost(View v, int position, Post post) {
+    public void onClickPost(View v, int position, Post post) {
 
     }
 
@@ -128,14 +127,6 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
                 mAdapter = new PostListAdapter(ActivityPostsList.this, posts);
                 mAdapter.setAoClicarNoPostListener(ActivityPostsList.this);
                 mRecycleView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
-
-                for (int i = 0; i < posts.size(); i++){
-                    MyLog.print("posts = "+posts.get(i).getTitle());
-                    MyLog.print("author = "+posts.get(i).getAuthor());
-                    MyLog.print("date = "+ posts.get(i).getDate());
-                    MyLog.print("image = "+posts.get(i).getImage());
-                    MyLog.print("========================");
-                }
                 swipeContainer.setRefreshing(false);
                 mAdapter.notifyDataSetChanged();
                 mTask = null;
