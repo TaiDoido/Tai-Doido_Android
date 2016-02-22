@@ -28,7 +28,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostsV
         mPosts = posts;
     }
 
-    public void setAoClicarNoPostListener(OnClickPostListener l){
+    public void addOnClickPostListener(OnClickPostListener l) {
         mListener = l;
     }
 

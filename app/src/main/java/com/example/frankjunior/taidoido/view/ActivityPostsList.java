@@ -17,7 +17,6 @@ import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.connection.HttpUtil;
 import com.example.frankjunior.taidoido.connection.PostHttp;
 import com.example.frankjunior.taidoido.model.Post;
-import com.example.frankjunior.taidoido.util.MyLog;
 
 import java.util.List;
 
@@ -116,7 +115,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
 
         @Override
         protected List<Post> doInBackground(Void... strings) {
-            return PostHttp.carregarBlogJson();
+            return PostHttp.loadBlogJson();
         }
 
         @Override
@@ -125,7 +124,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
             showProgress(false);
             if (posts != null) {
                 mAdapter = new PostListAdapter(ActivityPostsList.this, posts);
-                mAdapter.setAoClicarNoPostListener(ActivityPostsList.this);
+                mAdapter.addOnClickPostListener(ActivityPostsList.this);
                 mRecycleView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
                 swipeContainer.setRefreshing(false);
                 mAdapter.notifyDataSetChanged();

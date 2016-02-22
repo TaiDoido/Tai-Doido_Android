@@ -1,7 +1,6 @@
 package com.example.frankjunior.taidoido.connection;
 
 import com.example.frankjunior.taidoido.model.Post;
-import com.example.frankjunior.taidoido.util.MyLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,10 +18,7 @@ import java.util.List;
  */
 public class PostHttp {
 
-    private static int pageNumber = 1;
     private static final String BLOG_URL = "http://frankjunior.com.br/blog";
-    private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
-
     // Constants: tags from JSON object
     private static final String KEY_POSTS = "posts";
     private static final String KEY_ID = "id";
@@ -31,16 +27,18 @@ public class PostHttp {
     private static final String KEY_AUTHOR = "author";
     private static final String KEY_AUTHOR_NAME = "nickname";
     private static final String KEY_DATE = "date";
+    private static int pageNumber = 1;
+    private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
 
-    public static List<Post> carregarBlogJson() {
+    public static List<Post> loadBlogJson() {
         try {
             HttpURLConnection conexao = HttpUtil.connect(BLOG_RECENT_POSTS_JSON);
 
             int resposta = conexao.getResponseCode();
-            if (resposta ==  HttpURLConnection.HTTP_OK) {
+            if (resposta == HttpURLConnection.HTTP_OK) {
                 InputStream is = conexao.getInputStream();
-                String json = bytesParaString(is);
-                return lerJsonBlog(json);
+                String json = bytesToString(is);
+                return readJsonBlog(json);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,18 +46,18 @@ public class PostHttp {
         return null;
     }
 
-    private static List<Post> lerJsonBlog(String json) throws JSONException {
+    private static List<Post> readJsonBlog(String json) throws JSONException {
         List<Post> listaDePosts = new ArrayList<Post>();
         JSONObject jsonObject = new JSONObject(json);
         JSONArray postsJson = jsonObject.getJSONArray(KEY_POSTS);
         for (int i = 0; i < postsJson.length(); i++) {
             JSONObject jsonEntry = postsJson.getJSONObject(i);
-            listaDePosts.add(entryFromJSON(jsonEntry));
+            listaDePosts.add(jsonToModelParser(jsonEntry));
         }
         return listaDePosts;
     }
 
-    private static Post entryFromJSON(JSONObject jsonEntry) {
+    private static Post jsonToModelParser(JSONObject jsonEntry) {
         Post post = new Post();
         String id = null;
         String title = null;
@@ -67,12 +65,12 @@ public class PostHttp {
         String date = null;
         String image = null;
         try {
-        id = jsonEntry.getString(KEY_ID);
-        title = jsonEntry.getString(KEY_TITLE);
-        author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
-        date = jsonEntry.getString(KEY_DATE);
-        image = jsonEntry.getString(KEY_FEATURED_IMAGE);
-        } catch (JSONException e){
+            id = jsonEntry.getString(KEY_ID);
+            title = jsonEntry.getString(KEY_TITLE);
+            author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
+            date = jsonEntry.getString(KEY_DATE);
+            image = jsonEntry.getString(KEY_FEATURED_IMAGE);
+        } catch (JSONException e) {
             /*
                 Sempre vai cair nesse catch enquanto tiver testando,
                 pq nem sempre, o "image" existe.
@@ -90,7 +88,7 @@ public class PostHttp {
         }
     }
 
-    private static String bytesParaString(InputStream is) throws IOException {
+    private static String bytesToString(InputStream is) throws IOException {
         byte[] buffer = new byte[1024];
         ByteArrayOutputStream bufferzao = new ByteArrayOutputStream();
         int bytesLidos;
