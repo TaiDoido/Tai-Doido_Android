@@ -57,6 +57,7 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
             @Override
             public void onRefresh() {
                 showProgress(INVSISIBLE);
+                mPostList.clear();
                 DispararTask();
             }
         });
@@ -108,14 +109,19 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
 
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
-                    // Handle fake, só pra testar o componente de loading
+                    /* ===================================================
+                        Handle fake, só pra testar o componente de loading
+                       ===================================================
+                     */
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         public void run() {
                             Toast.makeText(RecentPostsListActivity.this, "carregou", Toast.LENGTH_SHORT).show();
+                            setLoaded();
                             removePaginationLoading();
                         }
                     }, 3000);
+                    // ===================================================
                     mLoading = true;
                 }
 
