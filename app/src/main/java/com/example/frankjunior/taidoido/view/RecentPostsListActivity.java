@@ -2,7 +2,6 @@ package com.example.frankjunior.taidoido.view;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.connection.HttpUtil;
@@ -32,6 +30,7 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
     private final int ERROR = 1;
     private final int INVSISIBLE = 2;
     private final int WITHOUT_CONNECTION = 3;
+    private final int FIRST_PAGE = 1;
     private PostTask mTask;
     private PostListAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -39,6 +38,8 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
     private ProgressBar mProgressBar;
     private SwipeRefreshLayout swipeContainer;
     private boolean mLoading = false;
+    private boolean isPagination = false;
+    private int mRecentPostsCurrentPage = FIRST_PAGE;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,8 +58,11 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
             @Override
             public void onRefresh() {
                 showProgress(INVSISIBLE);
+                isPagination = false;
                 mPostList.clear();
-                DispararTask();
+                mRecentPostsCurrentPage = FIRST_PAGE;
+                PostHttp.setPageNumber(FIRST_PAGE);
+                dispararTask();
             }
         });
 
@@ -79,7 +83,8 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
 
         // aqui são as validações pra disparar a task
         showProgress(LOADING);
-        DispararTask();
+        isPagination = false;
+        dispararTask();
     }
 
     // método que trata o evento de pagination
@@ -104,44 +109,24 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
                 }
 
                 private boolean canScrollerLastItens() {
-                    return (totalVisibleItem + firstVisiblesItem) >= totalItemCount;
+                    // Se chegou na ultima pagina, retorne false
+                    if (mRecentPostsCurrentPage < PostHttp.getTotalPages()) {
+                        return (totalVisibleItem + firstVisiblesItem) >= totalItemCount;
+                    } else {
+                        return false;
+                    }
                 }
 
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
-                    /* ===================================================
-                        Handle fake, só pra testar o componente de loading
-                       ===================================================
-                     */
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            Toast.makeText(RecentPostsListActivity.this, "carregou", Toast.LENGTH_SHORT).show();
-                            setLoaded();
-                            removePaginationLoading();
-                        }
-                    }, 3000);
-                    // ===================================================
+                    PostHttp.setPageNumber(mRecentPostsCurrentPage);
+                    isPagination = true;
+                    dispararTask();
                     mLoading = true;
                 }
 
-                private void addPaginationLoading() {
-                    mPostList.add(mPostList.size(), null);
-                    mAdapter.notifyItemInserted(Util.getLastPositionFromList(mPostList));
-                    mRecyclerView.swapAdapter(mAdapter, false);
-                }
-
-                private void removePaginationLoading() {
-                    mPostList.remove(Util.getLastPositionFromList(mPostList));
-                    mAdapter.notifyItemRemoved(mPostList.size());
-                    mRecyclerView.swapAdapter(mAdapter, false);
-                }
             });
         }
-    }
-
-    public void setLoaded() {
-        mLoading = false;
     }
 
     /*
@@ -159,7 +144,22 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
       *   Métodos private
       **********************************************
       */
-    private void DispararTask() {
+
+    private void addPaginationLoading() {
+        mRecentPostsCurrentPage++;
+        mPostList.add(mPostList.size(), null);
+        mAdapter.notifyItemInserted(Util.getLastPositionFromList(mPostList));
+        mRecyclerView.swapAdapter(mAdapter, false);
+    }
+
+    private void removePaginationLoading() {
+        mLoading = false;
+        mPostList.remove(Util.getLastPositionFromList(mPostList));
+        mAdapter.notifyItemRemoved(mPostList.size());
+        mRecyclerView.swapAdapter(mAdapter, false);
+    }
+
+    private void dispararTask() {
         if (mTask == null) {
             if (HttpUtil.hasConnectionAvailable(RecentPostsListActivity.this)) {
                 startDownload();
@@ -222,6 +222,9 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
             super.onPostExecute(posts);
             if (posts != null) {
                 showProgress(INVSISIBLE);
+                if (isPagination) {
+                    removePaginationLoading();
+                }
                 mPostList.addAll(posts);
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 swipeContainer.setRefreshing(false);

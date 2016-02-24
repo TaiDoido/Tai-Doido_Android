@@ -27,18 +27,20 @@ public class PostHttp {
     private static final String KEY_AUTHOR = "author";
     private static final String KEY_AUTHOR_NAME = "nickname";
     private static final String KEY_DATE = "date";
+    private static final String KEY_TOTAL_PAGES = "pages";
     private static int pageNumber = 1;
-    private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
+    private static int mTotalPages = 0;
 
     public static List<Post> loadRecentPosts() {
         try {
-            HttpURLConnection conexao = HttpUtil.connect(BLOG_RECENT_POSTS_JSON);
+            String recentPostsJson = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
+            HttpURLConnection conexao = HttpUtil.connect(recentPostsJson);
 
             int resposta = conexao.getResponseCode();
             if (resposta == HttpURLConnection.HTTP_OK) {
                 InputStream is = conexao.getInputStream();
                 String json = bytesToString(is);
-                return readJsonBlog(json);
+                return readJson(json);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,9 +48,25 @@ public class PostHttp {
         return null;
     }
 
-    private static List<Post> readJsonBlog(String json) throws JSONException {
+    public static int getTotalPages() {
+        return mTotalPages;
+    }
+
+    /*
+        **********************************************
+        *   Métodos private
+        **********************************************
+        */
+    private static List<Post> readJson(String json) throws JSONException {
         List<Post> listaDePosts = new ArrayList<Post>();
         JSONObject jsonObject = new JSONObject(json);
+
+        // se a for a primeira requisição, pegue o numero total de paginas.
+        // Esse if é necessário, pra não pegar esse campo a cada request
+        if (pageNumber == 1) {
+            mTotalPages = jsonObject.getInt(KEY_TOTAL_PAGES);
+        }
+
         JSONArray postsJson = jsonObject.getJSONArray(KEY_POSTS);
         for (int i = 0; i < postsJson.length(); i++) {
             JSONObject jsonEntry = postsJson.getJSONObject(i);
@@ -75,7 +93,7 @@ public class PostHttp {
                 Sempre vai cair nesse catch enquanto tiver testando,
                 pq nem sempre, o "image" existe.
                 Mas no cenário real, ele não vai cair aqui,
-                pq todos os posts vão ter featured image
+                pq todos os posts vão ter "featured image"
              */
             e.printStackTrace();
         } finally {
@@ -96,5 +114,12 @@ public class PostHttp {
             bufferzao.write(buffer, 0, bytesLidos);
         }
         return new String(bufferzao.toByteArray(), "UTF-8");
+    }
+
+    public static void setPageNumber(int pageNumber) {
+        if (pageNumber <= 0) {
+            pageNumber = 1;
+        }
+        PostHttp.pageNumber = pageNumber;
     }
 }
