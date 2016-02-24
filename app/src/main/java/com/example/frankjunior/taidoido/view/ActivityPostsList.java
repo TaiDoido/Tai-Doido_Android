@@ -26,6 +26,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
     private final int EMPTY_LOADING = 0;
     private final int EMPTY_ERROR = 1;
     private final int EMPTY_INVSISIBLE = 2;
+    private final int EMPTY_WITHOUT_CONNECTION = 3;
     private PostTask mTask;
     private PostListAdapter mAdapter;
     private RecyclerView mRecycleView;
@@ -66,12 +67,27 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
         DispararTask();
     }
 
+    /*
+      **********************************************
+      *   Click da lista
+      **********************************************
+      */
+    @Override
+    public void onClickPost(View v, int position, Post post) {
+        //TODO: tratar aqui o click da lista
+    }
+
+    /*
+      **********************************************
+      *   Métodos private
+      **********************************************
+      */
     private void DispararTask() {
         if (mTask == null) {
             if (HttpUtil.hasConnectionAvailable(ActivityPostsList.this)) {
                 startDownload();
             } else {
-                mTextMensagem.setText(getString(R.string.without_connection));
+                showEmpty(EMPTY_WITHOUT_CONNECTION);
             }
         } else if (mTask.getStatus() == AsyncTask.Status.RUNNING) {
             showProgress(true);
@@ -92,6 +108,10 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
                 mTextMensagem.setText(getString(R.string.posts_error));
                 mTextMensagem.setVisibility(View.VISIBLE);
                 break;
+            case EMPTY_WITHOUT_CONNECTION:
+                mTextMensagem.setText(getString(R.string.without_connection));
+                mTextMensagem.setVisibility(View.VISIBLE);
+                break;
             case EMPTY_INVSISIBLE:
                 mTextMensagem.setVisibility(View.GONE);
                 break;
@@ -99,17 +119,17 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
     }
 
     private void startDownload() {
-        if (mTask == null ||  mTask.getStatus() != AsyncTask.Status.RUNNING) {
+        if (mTask == null || mTask.getStatus() != AsyncTask.Status.RUNNING) {
             mTask = new PostTask();
             mTask.execute();
         }
     }
 
-    @Override
-    public void onClickPost(View v, int position, Post post) {
-        //TODO: tratar aqui o click da lista
-    }
-
+    /*
+      **********************************************
+      *   AsyncTask pra pegar os posts inicialmente
+      **********************************************
+      */
     class PostTask extends AsyncTask<Void, Void, List<Post>>{
 
         @Override
