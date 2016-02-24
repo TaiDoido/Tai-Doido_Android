@@ -1,12 +1,10 @@
 package com.example.frankjunior.taidoido.view;
 
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -25,6 +23,9 @@ import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 public class ActivityPostsList extends AppCompatActivity implements PostListAdapter.OnClickPostListener {
 
+    private final int EMPTY_LOADING = 0;
+    private final int EMPTY_ERROR = 1;
+    private final int EMPTY_INVSISIBLE = 2;
     private PostTask mTask;
     private PostListAdapter mAdapter;
     private RecyclerView mRecycleView;
@@ -77,12 +78,24 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
         }
     }
 
-    private void showProgress(boolean exibir) {
-        if (exibir) {
-            mTextMensagem.setText(getString(R.string.progress_msg));
+    private void showProgress(boolean isShow) {
+        mProgressBar.setVisibility(isShow ? View.VISIBLE : View.GONE);
+    }
+
+    private void showEmpty(int emptyType) {
+        switch (emptyType) {
+            case EMPTY_LOADING:
+                mTextMensagem.setText(getString(R.string.progress_msg));
+                mTextMensagem.setVisibility(View.VISIBLE);
+                break;
+            case EMPTY_ERROR:
+                mTextMensagem.setText(getString(R.string.posts_error));
+                mTextMensagem.setVisibility(View.VISIBLE);
+                break;
+            case EMPTY_INVSISIBLE:
+                mTextMensagem.setVisibility(View.GONE);
+                break;
         }
-        mTextMensagem.setVisibility(exibir ? View.VISIBLE : View.GONE);
-        mProgressBar.setVisibility(exibir ? View.VISIBLE : View.GONE);
     }
 
     private void startDownload() {
@@ -94,7 +107,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
 
     @Override
     public void onClickPost(View v, int position, Post post) {
-
+        //TODO: tratar aqui o click da lista
     }
 
     class PostTask extends AsyncTask<Void, Void, List<Post>>{
@@ -103,6 +116,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
         protected void onPreExecute() {
             super.onPreExecute();
             showProgress(true);
+            showEmpty(EMPTY_LOADING);
         }
 
         @Override
@@ -115,6 +129,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
             super.onPostExecute(posts);
             showProgress(false);
             if (posts != null) {
+                showEmpty(EMPTY_INVSISIBLE);
                 mAdapter = new PostListAdapter(ActivityPostsList.this, posts);
                 mAdapter.addOnClickPostListener(ActivityPostsList.this);
                 mRecycleView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
@@ -122,7 +137,7 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
                 mAdapter.notifyDataSetChanged();
                 mTask = null;
             } else {
-                mTextMensagem.setText(getString(R.string.posts_error));
+                showEmpty(EMPTY_ERROR);
             }
         }
     }
