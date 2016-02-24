@@ -30,7 +30,7 @@ public class PostHttp {
     private static int pageNumber = 1;
     private static final String BLOG_RECENT_POSTS_JSON = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
 
-    public static List<Post> loadBlogJson() {
+    public static List<Post> loadRecentPosts() {
         try {
             HttpURLConnection conexao = HttpUtil.connect(BLOG_RECENT_POSTS_JSON);
 
