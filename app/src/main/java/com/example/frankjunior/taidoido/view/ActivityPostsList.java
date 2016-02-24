@@ -25,12 +25,10 @@ import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 public class ActivityPostsList extends AppCompatActivity implements PostListAdapter.OnClickPostListener {
 
-    private static final int COLUMNS_NUMBER = 2;
     private PostTask mTask;
     private PostListAdapter mAdapter;
     private RecyclerView mRecycleView;
     private TextView mTextMensagem;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ProgressBar mProgressBar;
     private SwipeRefreshLayout swipeContainer;
 
@@ -45,15 +43,8 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
         mRecycleView = (RecyclerView) findViewById(R.id.list);
         mRecycleView.setHasFixedSize(true);
         mRecycleView.setItemAnimator(new SlideInLeftAnimator());
-
-        // esse if signfica que quando o aparelho tiver em portrait o layout do RecyclerView é LinearLayout
-        // e quando tiver em Landscape o layout é um GridLayout
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            mLayoutManager = new LinearLayoutManager(ActivityPostsList.this);
-        } else {
-            mLayoutManager = new GridLayoutManager(ActivityPostsList.this, COLUMNS_NUMBER);
-        }
-        mRecycleView.setLayoutManager(mLayoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(ActivityPostsList.this);
+        mRecycleView.setLayoutManager(layoutManager);
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -64,7 +55,8 @@ public class ActivityPostsList extends AppCompatActivity implements PostListAdap
         });
 
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        swipeContainer.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
