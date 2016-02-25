@@ -4,14 +4,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.connection.PostHttp;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.util.Util;
@@ -22,8 +24,9 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class RecentPostsListActivity extends AppCompatActivity implements PostListAdapter.OnClickPostListener {
+public class RecentPostsListFragment extends MainAbsFragment implements PostListAdapter.OnClickPostListener {
 
+    private static final String ARG_ID = "id_argument";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
     private final int LOADING = 0;
     private final int ERROR = 1;
@@ -40,15 +43,29 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
     private boolean isPagination = false;
     private int mRecentPostsCurrentPage = FIRST_PAGE;
 
+    public static RecentPostsListFragment newInstance(long id) {
+        Bundle args = new Bundle();
+        args.putLong(ARG_ID, id);
+        RecentPostsListFragment f = new RecentPostsListFragment();
+        f.setArguments(args);
+        return f;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_posts_list);
+    }
 
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        mTextMensagem = (TextView) findViewById(android.R.id.empty);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
+        mCallbacks.onFragmentCreateView(view);
+
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        mTextMensagem = (TextView) view.findViewById(android.R.id.empty);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new SlideInLeftAnimator());
 
@@ -69,18 +86,20 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
                 R.color.google_yellow,
                 R.color.google_red);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(RecentPostsListActivity.this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(App.getContext());
         mRecyclerView.setLayoutManager(layoutManager);
         PaginationHandle();
 
-        mAdapter = new PostListAdapter(RecentPostsListActivity.this, mPostList);
-        mAdapter.addOnClickPostListener(RecentPostsListActivity.this);
+        mAdapter = new PostListAdapter(getActivity(), mPostList);
+        mAdapter.addOnClickPostListener(RecentPostsListFragment.this);
         mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
 
         // aqui são as validações pra disparar a task
         showProgress(LOADING);
         resetRequest();
         dispararTask();
+
+        return view;
     }
 
     // método que trata o evento de pagination
@@ -166,7 +185,7 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
 
     private void dispararTask() {
         if (mTask == null) {
-            if (Util.isInternetConnected(RecentPostsListActivity.this)) {
+            if (Util.isInternetConnected(getActivity())) {
                 startDownload();
             } else {
                 showProgress(WITHOUT_CONNECTION);

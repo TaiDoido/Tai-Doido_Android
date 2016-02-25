@@ -113,8 +113,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public PostViewHolder(View parent) {
             super(parent);
             imgCapa = (ImageView) parent.findViewById(R.id.imgPost);
-            txtTitulo = (TextView) parent.findViewById(R.id.txtTitulo);
-            txtAutores = (TextView) parent.findViewById(R.id.txtAutores);
+            txtTitulo = (TextView) parent.findViewById(R.id.txtTitle);
+            txtAutores = (TextView) parent.findViewById(R.id.txtAuthor);
             txtDate = (TextView) parent.findViewById(R.id.txtDate);
         }
     }

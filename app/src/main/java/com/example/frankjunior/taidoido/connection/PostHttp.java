@@ -54,10 +54,10 @@ public class PostHttp {
     }
 
     /*
-        **********************************************
-        *   Métodos private
-        **********************************************
-        */
+    **********************************************
+    *   Métodos private
+    **********************************************
+    */
     private static List<Post> readJson(String json) throws JSONException {
         List<Post> listaDePosts = new ArrayList<Post>();
         JSONObject jsonObject = new JSONObject(json);

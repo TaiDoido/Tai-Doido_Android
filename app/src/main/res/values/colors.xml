@@ -4,6 +4,7 @@
     <color name="colorPrimary">#AD1457</color>
     <color name="colorPrimarySelection">#F8BBD0</color>
     <color name="colorPrimaryDark">#880E4F</color>
+    <color name="theme_background">#e0e5e9</color>
 
     <!-- Google colors -->
     <color name="google_blue">#4285F4</color>
