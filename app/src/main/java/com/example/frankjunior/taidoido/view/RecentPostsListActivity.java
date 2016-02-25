@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.frankjunior.taidoido.R;
-import com.example.frankjunior.taidoido.connection.HttpUtil;
 import com.example.frankjunior.taidoido.connection.PostHttp;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.util.Util;
@@ -58,20 +57,17 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
             @Override
             public void onRefresh() {
                 showProgress(INVSISIBLE);
-                isPagination = false;
-                mPostList.clear();
-                mRecentPostsCurrentPage = FIRST_PAGE;
-                PostHttp.setPageNumber(FIRST_PAGE);
+                resetRequest();
                 dispararTask();
             }
         });
 
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(
-                android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+                R.color.google_blue,
+                R.color.google_green,
+                R.color.google_yellow,
+                R.color.google_red);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(RecentPostsListActivity.this);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -83,7 +79,7 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
 
         // aqui são as validações pra disparar a task
         showProgress(LOADING);
-        isPagination = false;
+        resetRequest();
         dispararTask();
     }
 
@@ -145,6 +141,15 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
       **********************************************
       */
 
+    // método usado para resetar valores iniciais,
+    // usado no fisrt laoding e no pullToRefresh
+    private void resetRequest() {
+        isPagination = false;
+        mPostList.clear();
+        mRecentPostsCurrentPage = FIRST_PAGE;
+        PostHttp.setPageNumber(FIRST_PAGE);
+    }
+
     private void addPaginationLoading() {
         mRecentPostsCurrentPage++;
         mPostList.add(mPostList.size(), null);
@@ -161,7 +166,7 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
 
     private void dispararTask() {
         if (mTask == null) {
-            if (HttpUtil.hasConnectionAvailable(RecentPostsListActivity.this)) {
+            if (Util.isInternetConnected(RecentPostsListActivity.this)) {
                 startDownload();
             } else {
                 showProgress(WITHOUT_CONNECTION);
@@ -202,7 +207,7 @@ public class RecentPostsListActivity extends AppCompatActivity implements PostLi
 
     /*
       **********************************************
-      *   AsyncTask pra pegar os posts inicialmente
+      *   AsyncTask pra pegar os posts
       **********************************************
       */
     class PostTask extends AsyncTask<Void, Void, List<Post>>{

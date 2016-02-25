@@ -1,6 +1,7 @@
 package com.example.frankjunior.taidoido.connection;
 
 import com.example.frankjunior.taidoido.model.Post;
+import com.example.frankjunior.taidoido.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +35,7 @@ public class PostHttp {
     public static List<Post> loadRecentPosts() {
         try {
             String recentPostsJson = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
-            HttpURLConnection conexao = HttpUtil.connect(recentPostsJson);
+            HttpURLConnection conexao = Util.connect(recentPostsJson);
 
             int resposta = conexao.getResponseCode();
             if (resposta == HttpURLConnection.HTTP_OK) {
@@ -96,14 +97,13 @@ public class PostHttp {
                 pq todos os posts vão ter "featured image"
              */
             e.printStackTrace();
-        } finally {
-            post.setId(id);
-            post.setTitle(title);
-            post.setImage(image);
-            post.setAuthor(author);
-            post.setDate(date);
-            return post;
         }
+        post.setId(id);
+        post.setTitle(title);
+        post.setImage(image);
+        post.setAuthor(author);
+        post.setDate(date);
+        return post;
     }
 
     private static String bytesToString(InputStream is) throws IOException {

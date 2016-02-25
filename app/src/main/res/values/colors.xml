@@ -4,4 +4,10 @@
     <color name="colorPrimary">#AD1457</color>
     <color name="colorPrimarySelection">#F8BBD0</color>
     <color name="colorPrimaryDark">#880E4F</color>
+
+    <!-- Google colors -->
+    <color name="google_blue">#4285F4</color>
+    <color name="google_green">#34A853</color>
+    <color name="google_yellow">#FBBC05</color>
+    <color name="google_red">#E44335</color>
 </resources>
