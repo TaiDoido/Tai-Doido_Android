@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.view;
+package com.example.frankjunior.taidoido.ui;
 
 import android.os.AsyncTask;
 import android.os.Bundle;

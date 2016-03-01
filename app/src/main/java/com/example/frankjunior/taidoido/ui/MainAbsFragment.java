@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.view;
+package com.example.frankjunior.taidoido.ui;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
