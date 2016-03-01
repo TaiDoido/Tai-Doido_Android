@@ -23,20 +23,35 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
     private static final int VIEW_TYPE_SEPARATOR = 1;
     private static final int VIEW_TYPE_UNSELECTABLE = 2;
 
+    // constantes para construção dos itens da lista
+    private static final boolean CLICKABLE_ON = true;
+    private static final boolean CLICKABLE_OFF = false;
+    private static final int ICON_HOME = R.drawable.ic_action_home;
+    private static final int ICON_FAVORITE = R.drawable.ic_action_favorite;
+    private static final int ICON_CATEGORY = R.drawable.ic_action_label;
+    private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
+    private static final int ICON_ABOUT = R.drawable.ic_action_info;
+
+    private static final int RECENT_POSTS = R.string.navigation_drawer_recent_posts;
+    private static final int FAVORITES = R.string.navigation_drawer_favorites;
+    private static final int STRING_FAKE = R.string.navigation_drawer_fake;
+    private static final int SETTINGS = R.string.navigation_drawer_settings;
+    private static final int ABOUT = R.string.navigation_drawer_about;
+
     private static final DrawerListItem[] ITEMS = new DrawerListItem[]{
-            new DrawerListItem(true, R.drawable.ic_action_home, R.string.navigation_drawer_recent_posts),
-            new DrawerListItem(true, R.drawable.ic_action_favorite, R.string.navigation_drawer_favorites),
+            new DrawerListItem(CLICKABLE_ON, ICON_HOME, RECENT_POSTS),
+            new DrawerListItem(CLICKABLE_ON, ICON_FAVORITE, FAVORITES),
 
             new DrawerListItem(),
 
-            new DrawerListItem(false, R.drawable.ic_action_label, R.string.navigation_drawer_fake),
-            new DrawerListItem(false, R.drawable.ic_action_label, R.string.navigation_drawer_fake),
-            new DrawerListItem(false, R.drawable.ic_action_label, R.string.navigation_drawer_fake),
+            new DrawerListItem(CLICKABLE_OFF, ICON_CATEGORY, STRING_FAKE),
+            new DrawerListItem(CLICKABLE_OFF, ICON_CATEGORY, STRING_FAKE),
+            new DrawerListItem(CLICKABLE_OFF, ICON_CATEGORY, STRING_FAKE),
 
             new DrawerListItem(),
 
-            new DrawerListItem(false, R.drawable.ic_action_settings, R.string.navigation_drawer_settings),
-            new DrawerListItem(false, R.drawable.ic_action_info, R.string.navigation_drawer_about)
+            new DrawerListItem(CLICKABLE_OFF, ICON_SETTINGS, SETTINGS),
+            new DrawerListItem(CLICKABLE_OFF, ICON_ABOUT, ABOUT)
     };
 
     final private LayoutInflater mInflater;
