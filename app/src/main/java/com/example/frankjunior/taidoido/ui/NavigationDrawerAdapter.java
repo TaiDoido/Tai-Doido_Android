@@ -16,7 +16,7 @@ import com.example.frankjunior.taidoido.model.DrawerListItem;
  * Created by frankjunior on 01/03/16.
  * Adapter do @NavigationDrawerFragment
  */
-public class DrawerListAdapter extends ArrayAdapter<DrawerListItem> {
+public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
 
     private static final int VIEW_TYPE_COUNT = 3;
     private static final int VIEW_TYPE_SELECTABLE = 0;
@@ -42,7 +42,7 @@ public class DrawerListAdapter extends ArrayAdapter<DrawerListItem> {
     final private LayoutInflater mInflater;
     final private int mSelectableBackground;
 
-    public DrawerListAdapter(Context context) {
+    public NavigationDrawerAdapter(Context context) {
         super(context, 0, ITEMS);
         mInflater = LayoutInflater.from(context);
         TypedValue outValue = new TypedValue();

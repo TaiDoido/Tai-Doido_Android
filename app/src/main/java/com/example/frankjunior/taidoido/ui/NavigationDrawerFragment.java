@@ -53,7 +53,7 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
     private boolean mFromSavedInstanceState;
     private ListView mDrawerListView;
-    private DrawerListAdapter mDrawerListAdapter;
+    private NavigationDrawerAdapter mNavigationDrawerAdapter;
 
     public NavigationDrawerFragment() {
 
@@ -169,8 +169,8 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListAdapter = new DrawerListAdapter(getActivity());
-        mDrawerListView.setAdapter(mDrawerListAdapter);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity());
+        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
         setItemChecked(mCurrentSelectedPosition);
         return rootView;
     }

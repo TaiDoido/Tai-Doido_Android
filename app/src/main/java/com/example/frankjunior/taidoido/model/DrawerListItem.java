@@ -2,7 +2,7 @@ package com.example.frankjunior.taidoido.model;
 
 /**
  * Created by frankjunior on 01/03/16.
- * Classe usada no @DrawerListAdapter para preencher e formar o menu
+ * Classe usada no @NavigationDrawerAdapter para preencher e formar o menu
  */
 public class DrawerListItem {
 
