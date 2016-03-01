@@ -23,42 +23,11 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
     private static final int VIEW_TYPE_SEPARATOR = 1;
     private static final int VIEW_TYPE_UNSELECTABLE = 2;
 
-    // constantes para construção dos itens da lista
-    private static final boolean CLICKABLE_ON = true;
-    private static final boolean CLICKABLE_OFF = false;
-    private static final int ICON_HOME = R.drawable.ic_action_home;
-    private static final int ICON_FAVORITE = R.drawable.ic_action_favorite;
-    private static final int ICON_CATEGORY = R.drawable.ic_action_label;
-    private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
-    private static final int ICON_ABOUT = R.drawable.ic_action_info;
-
-    private static final int RECENT_POSTS = R.string.navigation_drawer_recent_posts;
-    private static final int FAVORITES = R.string.navigation_drawer_favorites;
-    private static final int STRING_FAKE = R.string.navigation_drawer_fake;
-    private static final int SETTINGS = R.string.navigation_drawer_settings;
-    private static final int ABOUT = R.string.navigation_drawer_about;
-
-    private static final DrawerListItem[] ITEMS = new DrawerListItem[]{
-            new DrawerListItem(CLICKABLE_ON, ICON_HOME, RECENT_POSTS),
-            new DrawerListItem(CLICKABLE_ON, ICON_FAVORITE, FAVORITES),
-
-            new DrawerListItem(),
-
-            new DrawerListItem(CLICKABLE_OFF, ICON_CATEGORY, STRING_FAKE),
-            new DrawerListItem(CLICKABLE_OFF, ICON_CATEGORY, STRING_FAKE),
-            new DrawerListItem(CLICKABLE_OFF, ICON_CATEGORY, STRING_FAKE),
-
-            new DrawerListItem(),
-
-            new DrawerListItem(CLICKABLE_OFF, ICON_SETTINGS, SETTINGS),
-            new DrawerListItem(CLICKABLE_OFF, ICON_ABOUT, ABOUT)
-    };
-
     final private LayoutInflater mInflater;
     final private int mSelectableBackground;
 
-    public NavigationDrawerAdapter(Context context) {
-        super(context, 0, ITEMS);
+    public NavigationDrawerAdapter(Context context, DrawerListItem[] menuItens) {
+        super(context, 0, menuItens);
         mInflater = LayoutInflater.from(context);
         TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.activatedBackgroundIndicator, outValue, true);
@@ -124,6 +93,11 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
         return VIEW_TYPE_COUNT;
     }
 
+    /*
+    **********************************************
+    *   Classes ViewHolder
+    **********************************************
+    */
     private class ViewHolder {
 
         final ImageView iconView;

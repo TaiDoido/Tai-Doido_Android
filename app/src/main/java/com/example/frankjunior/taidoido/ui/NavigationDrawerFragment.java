@@ -18,6 +18,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.model.DrawerListItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by frankjunior on 25/02/16.
@@ -29,6 +33,21 @@ public class NavigationDrawerFragment extends Fragment {
     public static final int SEPARATOR_ITEM = 2;
     public static final int SETTINGS_ITEM = 3;
     public static final int ABOUT_ITEM = 4;
+
+    // constantes para construção dos itens da lista
+    private static final boolean CLICKABLE_ON = true;
+    private static final boolean CLICKABLE_OFF = false;
+    private static final int ICON_HOME = R.drawable.ic_action_home;
+    private static final int ICON_FAVORITE = R.drawable.ic_action_favorite;
+    private static final int ICON_CATEGORY = R.drawable.ic_action_label;
+    private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
+    private static final int ICON_ABOUT = R.drawable.ic_action_info;
+
+    private static final int RECENT_POSTS = R.string.navigation_drawer_recent_posts;
+    private static final int FAVORITES = R.string.navigation_drawer_favorites;
+    private static final int STRING_FAKE = R.string.navigation_drawer_fake;
+    private static final int SETTINGS = R.string.navigation_drawer_settings;
+    private static final int ABOUT = R.string.navigation_drawer_about;
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -169,30 +188,12 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity());
+        //TODO: passar o retorno da AsyncTask para o fillItensArray
+        DrawerListItem[] menuItens = fillItensArray(null);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), menuItens);
         mDrawerListView.setAdapter(mNavigationDrawerAdapter);
         setItemChecked(mCurrentSelectedPosition);
         return rootView;
-    }
-
-    private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
-        }
-    }
-
-    private void setItemChecked(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        }
     }
 
     @Override
@@ -227,6 +228,60 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    /*
+     **********************************************
+     *   Métodos private
+     **********************************************
+     */
+
+    /**
+     * Método para preencher os itens do array que será passado pro @NavigationDrawerAdapter.
+     *
+     * @param categoryItems - itens da categoria que vem preenchido do AsyncTask
+     * @return array de itens completamente preenchido
+     */
+    private DrawerListItem[] fillItensArray(List<DrawerListItem> categoryItems) {
+        List<DrawerListItem> menuItemList = new ArrayList<DrawerListItem>();
+        // Adiciona os primeiros itens estáticos no array.
+        menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_HOME, RECENT_POSTS));
+        menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_FAVORITE, FAVORITES));
+
+        // se o categoryItems não for nulo, adicione o conteúdo dele no array.
+        if (categoryItems != null) {
+            menuItemList.add(new DrawerListItem()); // separador
+            menuItemList.addAll(categoryItems);
+            menuItemList.add(new DrawerListItem()); // separador
+        }
+        // depois de adicionar o conteúdo do categoryItems, adiciona os ultimos itens estáticos.
+        menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_SETTINGS, SETTINGS));
+        menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_ABOUT, ABOUT));
+
+        // transformando o ArrayList<> em um array[]
+        DrawerListItem[] menuItemArray = new DrawerListItem[menuItemList.size()];
+        menuItemArray = menuItemList.toArray(menuItemArray);
+        return menuItemArray;
+    }
+
+    private void selectItem(int position) {
+        mCurrentSelectedPosition = position;
+        if (mDrawerListView != null) {
+            mDrawerListView.setItemChecked(position, true);
+        }
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        }
+        if (mCallbacks != null) {
+            mCallbacks.onNavigationDrawerItemSelected(position);
+        }
+    }
+
+    private void setItemChecked(int position) {
+        mCurrentSelectedPosition = position;
+        if (mDrawerListView != null) {
+            mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        }
     }
 
     /**
