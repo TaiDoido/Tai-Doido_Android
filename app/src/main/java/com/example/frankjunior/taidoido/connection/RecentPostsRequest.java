@@ -7,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -16,11 +14,12 @@ import java.util.List;
 
 /**
  * Created by frankjunior on 14/01/16.
+ * * Classe responsável por administrar a request de pegar os RecentPosts da API
  */
-public class PostHttp {
+public class RecentPostsRequest {
 
-    private static final String BLOG_URL = "http://frankjunior.com.br/blog";
-    // Constants: tags from JSON object
+    // ===================================================================
+    // Constants: JSON objects tags - Recent Posts
     private static final String KEY_POSTS = "posts";
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
@@ -31,26 +30,33 @@ public class PostHttp {
     private static final String KEY_TOTAL_PAGES = "pages";
     private static int pageNumber = 1;
     private static int mTotalPages = 0;
+    private static String mBlogURL = null;
+    // ===================================================================
+    private final int FIRST_PAGE = 1;
 
-    public static List<Post> loadRecentPosts() {
-        try {
-            String recentPostsJson = BLOG_URL + "/api/get_recent_posts/?page=" + pageNumber;
-            HttpURLConnection conexao = Util.connect(recentPostsJson);
-
-            int resposta = conexao.getResponseCode();
-            if (resposta == HttpURLConnection.HTTP_OK) {
-                InputStream is = conexao.getInputStream();
-                String json = bytesToString(is);
-                return readJson(json);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public RecentPostsRequest(String blogUrl) {
+        mBlogURL = blogUrl;
     }
 
+    /**
+     * Método para pegar o numero total de paginas, para controle da paginação
+     *
+     * @return
+     */
     public static int getTotalPages() {
         return mTotalPages;
+    }
+
+    /**
+     * Método para setar o numero da pagina, da paginação do RecentPosts
+     *
+     * @param pageNumber - numero da pagina
+     */
+    public static void setPageNumber(int pageNumber) {
+        if (pageNumber <= 0) {
+            pageNumber = 1;
+        }
+        RecentPostsRequest.pageNumber = pageNumber;
     }
 
     /*
@@ -58,25 +64,61 @@ public class PostHttp {
     *   Métodos private
     **********************************************
     */
-    private static List<Post> readJson(String json) throws JSONException {
+
+    /**
+     * Método principal para pegar os RecentPosts
+     *
+     * @return - Lista de posts preenchida
+     */
+    public List<Post> loadRecentPosts() {
+        try {
+            String recentPostsJson = mBlogURL + "/api/get_recent_posts/?page=" + pageNumber;
+            HttpURLConnection conexao = Util.connect(recentPostsJson);
+
+            int resposta = conexao.getResponseCode();
+            if (resposta == HttpURLConnection.HTTP_OK) {
+                InputStream is = conexao.getInputStream();
+                String json = Util.bytesToString(is);
+                return readJsonRecentPosts(json);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Método para ler o JSON da API de RecentPosts, e converter para uma lista de posts
+     *
+     * @param json - JSON inteiro a ser lido
+     * @return - um arrayList de posts
+     * @throws JSONException
+     */
+    private List<Post> readJsonRecentPosts(String json) throws JSONException {
         List<Post> listaDePosts = new ArrayList<Post>();
         JSONObject jsonObject = new JSONObject(json);
 
         // se a for a primeira requisição, pegue o numero total de paginas.
         // Esse if é necessário, pra não pegar esse campo a cada request
-        if (pageNumber == 1) {
+        if (pageNumber == FIRST_PAGE) {
             mTotalPages = jsonObject.getInt(KEY_TOTAL_PAGES);
         }
 
         JSONArray postsJson = jsonObject.getJSONArray(KEY_POSTS);
         for (int i = 0; i < postsJson.length(); i++) {
             JSONObject jsonEntry = postsJson.getJSONObject(i);
-            listaDePosts.add(jsonToModelParser(jsonEntry));
+            listaDePosts.add(jsonRecentPostsParser(jsonEntry));
         }
         return listaDePosts;
     }
 
-    private static Post jsonToModelParser(JSONObject jsonEntry) {
+    /**
+     * Método para converter um objeto JSON para o model @Post
+     *
+     * @param jsonEntry - Objeto JSON
+     * @return - Model Post
+     */
+    private Post jsonRecentPostsParser(JSONObject jsonEntry) {
         Post post = new Post();
         String id = null;
         String title = null;
@@ -104,22 +146,5 @@ public class PostHttp {
         post.setAuthor(author);
         post.setDate(date);
         return post;
-    }
-
-    private static String bytesToString(InputStream is) throws IOException {
-        byte[] buffer = new byte[1024];
-        ByteArrayOutputStream bufferzao = new ByteArrayOutputStream();
-        int bytesLidos;
-        while ((bytesLidos = is.read(buffer)) != -1) {
-            bufferzao.write(buffer, 0, bytesLidos);
-        }
-        return new String(bufferzao.toByteArray(), "UTF-8");
-    }
-
-    public static void setPageNumber(int pageNumber) {
-        if (pageNumber <= 0) {
-            pageNumber = 1;
-        }
-        PostHttp.pageNumber = pageNumber;
     }
 }

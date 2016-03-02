@@ -4,6 +4,7 @@ package com.example.frankjunior.taidoido.ui;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -18,7 +19,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
+import com.example.frankjunior.taidoido.model.Post;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,9 +76,11 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private ListView mDrawerListView;
     private NavigationDrawerAdapter mNavigationDrawerAdapter;
+    private DrawerListItem[] mMenuItens;
+    private RequestController mRequestController;
 
     public NavigationDrawerFragment() {
-
+        mRequestController = new RequestController();
     }
 
     private void userLearnedDrawer() {
@@ -189,8 +194,8 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
         //TODO: passar o retorno da AsyncTask para o fillItensArray
-        DrawerListItem[] menuItens = fillItensArray(null);
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), menuItens);
+        mMenuItens = fillItensArray(null);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
         mDrawerListView.setAdapter(mNavigationDrawerAdapter);
         setItemChecked(mCurrentSelectedPosition);
         return rootView;
@@ -292,6 +297,27 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+    /**
+     * AsyncTask pra pegar a lista de categorias e preencher o NavigationDrawer
+     */
+    class CategoryTask extends AsyncTask<Void, Void, List<Post>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<Post> doInBackground(Void... strings) {
+            return mRequestController.loadRecentPosts();
+        }
+
+        @Override
+        protected void onPostExecute(List<Post> posts) {
+            super.onPostExecute(posts);
+        }
     }
 
 }

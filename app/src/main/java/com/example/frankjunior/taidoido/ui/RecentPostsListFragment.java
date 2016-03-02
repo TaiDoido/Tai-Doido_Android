@@ -14,7 +14,8 @@ import android.widget.TextView;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.app.App;
-import com.example.frankjunior.taidoido.connection.PostHttp;
+import com.example.frankjunior.taidoido.connection.RecentPostsRequest;
+import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.util.Util;
 
@@ -42,6 +43,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
     private boolean mLoading = false;
     private boolean isPagination = false;
     private int mRecentPostsCurrentPage = FIRST_PAGE;
+    private RequestController mRequestController;
 
     public static RecentPostsListFragment newInstance(long id) {
         Bundle args = new Bundle();
@@ -54,6 +56,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRequestController = new RequestController();
     }
 
     @Nullable
@@ -125,7 +128,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
 
                 private boolean canScrollerLastItens() {
                     // Se chegou na ultima pagina, retorne false
-                    if (mRecentPostsCurrentPage < PostHttp.getTotalPages()) {
+                    if (mRecentPostsCurrentPage < RecentPostsRequest.getTotalPages()) {
                         return (totalVisibleItem + firstVisiblesItem) >= totalItemCount;
                     } else {
                         return false;
@@ -134,7 +137,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
 
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
-                    PostHttp.setPageNumber(mRecentPostsCurrentPage);
+                    RecentPostsRequest.setPageNumber(mRecentPostsCurrentPage);
                     isPagination = true;
                     dispararTask();
                     mLoading = true;
@@ -166,7 +169,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
         isPagination = false;
         mPostList.clear();
         mRecentPostsCurrentPage = FIRST_PAGE;
-        PostHttp.setPageNumber(FIRST_PAGE);
+        RecentPostsRequest.setPageNumber(FIRST_PAGE);
     }
 
     private void addPaginationLoading() {
@@ -238,7 +241,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
 
         @Override
         protected List<Post> doInBackground(Void... strings) {
-            return PostHttp.loadRecentPosts();
+            return mRequestController.loadRecentPosts();
         }
 
         @Override

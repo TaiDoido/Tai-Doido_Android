@@ -4,7 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,5 +61,22 @@ public class Util {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();
         return (info != null && info.isConnected());
+    }
+
+    /**
+     * Método auxiliar para converter os bytes recem baixados de um InputStream para uma String
+     *
+     * @param is - INputStream recem baixado
+     * @return - String com o resultado
+     * @throws IOException
+     */
+    public static String bytesToString(InputStream is) throws IOException {
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream bufferzao = new ByteArrayOutputStream();
+        int bytesLidos;
+        while ((bytesLidos = is.read(buffer)) != -1) {
+            bufferzao.write(buffer, 0, bytesLidos);
+        }
+        return new String(bufferzao.toByteArray(), "UTF-8");
     }
 }
