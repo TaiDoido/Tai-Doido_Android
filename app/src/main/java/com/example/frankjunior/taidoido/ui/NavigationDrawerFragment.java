@@ -348,20 +348,20 @@ public class NavigationDrawerFragment extends Fragment {
                     menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_CATEGORY, posts.get(i).getTitle()));
                 }
                 mMenuItens = fillItensArray(menuItemList);
-
-                // atualizando o adapter e o "position" da lista
-                mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
-                mDrawerListView.setAdapter(mNavigationDrawerAdapter);
-                mNavigationDrawerAdapter.notifyDataSetChanged();
-                mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        userLearnedDrawer();
-                        selectItem(position);
-                    }
-                });
-                setItemChecked(mCurrentSelectedPosition);
             }
+
+            // atualizando o adapter e o "position" da lista
+            mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
+            mDrawerListView.setAdapter(mNavigationDrawerAdapter);
+            mNavigationDrawerAdapter.notifyDataSetChanged();
+            mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    userLearnedDrawer();
+                    selectItem(position);
+                }
+            });
+            setItemChecked(mCurrentSelectedPosition);
 
         }
     }
