@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
 
+import java.util.List;
+
 /**
  * Created by frankjunior on 01/03/16.
  * Adapter do @NavigationDrawerFragment
@@ -25,9 +27,11 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
 
     final private LayoutInflater mInflater;
     final private int mSelectableBackground;
+    private List<DrawerListItem> mMenuItens;
 
-    public NavigationDrawerAdapter(Context context, DrawerListItem[] menuItens) {
-        super(context, 0, menuItens);
+    public NavigationDrawerAdapter(Context context, List<DrawerListItem> menuItens) {
+        super(context, 0);
+        mMenuItens = menuItens;
         mInflater = LayoutInflater.from(context);
         TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.activatedBackgroundIndicator, outValue, true);
@@ -55,7 +59,7 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
                 }
                 DrawerListItem item = getItem(position);
                 holder.iconView.setImageResource(item.iconResource);
-                holder.textView.setText(item.textResource);
+                holder.textView.setText(item.textTitle);
                 if (viewType == VIEW_TYPE_SELECTABLE) {
                     convertView.setBackgroundResource(mSelectableBackground);
                 } else {
@@ -64,6 +68,16 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
                 break;
         }
         return convertView;
+    }
+
+    @Override
+    public int getCount() {
+        return mMenuItens.size();
+    }
+
+    @Override
+    public DrawerListItem getItem(int position) {
+        return mMenuItens.get(position);
     }
 
     @Override

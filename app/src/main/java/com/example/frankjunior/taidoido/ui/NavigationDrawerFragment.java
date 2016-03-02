@@ -22,7 +22,6 @@ import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
-import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;
@@ -47,24 +46,19 @@ public class NavigationDrawerFragment extends Fragment {
     private static final int ICON_CATEGORY = R.drawable.ic_action_label;
     private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
     private static final int ICON_ABOUT = R.drawable.ic_action_info;
-
-    private static final int RECENT_POSTS = R.string.navigation_drawer_recent_posts;
-    private static final int FAVORITES = R.string.navigation_drawer_favorites;
-    private static final int STRING_FAKE = R.string.navigation_drawer_fake;
-    private static final int SETTINGS = R.string.navigation_drawer_settings;
-    private static final int ABOUT = R.string.navigation_drawer_about;
-
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-
     /**
      * Remember the position of the selected item.
      */
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-
+    private static String RECENT_POSTS = null;
+    private static String FAVORITES = null;
+    private static String SETTINGS = null;
+    private static String ABOUT = null;
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -78,7 +72,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private ListView mDrawerListView;
     private NavigationDrawerAdapter mNavigationDrawerAdapter;
-    private DrawerListItem[] mMenuItens;
+    private List<DrawerListItem> mMenuItens = new ArrayList<DrawerListItem>();
     private RequestController mRequestController;
     private CategoryTask mTask;
 
@@ -182,6 +176,21 @@ public class NavigationDrawerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
+
+        /*
+            OBS: essas constantes precisam ficar aqui no "onActivityCreated",
+            pq se colocar em algum método antes no ciclo de vida, o "getActivity()"
+            retorna null e estoura um NullPointerException.
+            Consequentemente, a chamada do "fillItensArray(null)" tem que ficar aqui tb
+         */
+        RECENT_POSTS = getActivity().getString(R.string.navigation_drawer_recent_posts);
+        FAVORITES = getActivity().getString(R.string.navigation_drawer_favorites);
+        SETTINGS = getActivity().getString(R.string.navigation_drawer_settings);
+        ABOUT = getActivity().getString(R.string.navigation_drawer_about);
+
+        mMenuItens = fillItensArray(null);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
+        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
     }
 
     @Override
@@ -196,10 +205,6 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        //TODO: passar o retorno da AsyncTask para o fillItensArray
-        mMenuItens = fillItensArray(null);
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
-        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
         setItemChecked(mCurrentSelectedPosition);
 
         dispararTask();
@@ -267,7 +272,7 @@ public class NavigationDrawerFragment extends Fragment {
      * @param categoryItems - itens da categoria que vem preenchido do AsyncTask
      * @return array de itens completamente preenchido
      */
-    private DrawerListItem[] fillItensArray(List<DrawerListItem> categoryItems) {
+    private List<DrawerListItem> fillItensArray(List<DrawerListItem> categoryItems) {
         List<DrawerListItem> menuItemList = new ArrayList<DrawerListItem>();
         // Adiciona os primeiros itens estáticos no array.
         menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_HOME, RECENT_POSTS));
@@ -286,7 +291,7 @@ public class NavigationDrawerFragment extends Fragment {
         // transformando o ArrayList<> em um array[]
         DrawerListItem[] menuItemArray = new DrawerListItem[menuItemList.size()];
         menuItemArray = menuItemList.toArray(menuItemArray);
-        return menuItemArray;
+        return menuItemList;
     }
 
     private void selectItem(int position) {
@@ -337,11 +342,27 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Category> posts) {
             super.onPostExecute(posts);
-            for (int i = 0; i < posts.size(); i++) {
-                MyLog.print("categoria_id = " + posts.get(i).getId());
-                MyLog.print("categoria_title = " + posts.get(i).getTitle());
-                MyLog.print("======================");
+            List<DrawerListItem> menuItemList = new ArrayList<DrawerListItem>();
+            if (posts != null) {
+                for (int i = 0; i < posts.size(); i++) {
+                    menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_CATEGORY, posts.get(i).getTitle()));
+                }
+                mMenuItens = fillItensArray(menuItemList);
+
+                // atualizando o adapter e o "position" da lista
+                mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
+                mDrawerListView.setAdapter(mNavigationDrawerAdapter);
+                mNavigationDrawerAdapter.notifyDataSetChanged();
+                mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        userLearnedDrawer();
+                        selectItem(position);
+                    }
+                });
+                setItemChecked(mCurrentSelectedPosition);
             }
+
         }
     }
 
