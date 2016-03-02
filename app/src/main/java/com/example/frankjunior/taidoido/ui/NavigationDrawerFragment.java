@@ -20,8 +20,10 @@ import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.controller.RequestController;
+import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
-import com.example.frankjunior.taidoido.model.Post;
+import com.example.frankjunior.taidoido.util.MyLog;
+import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +80,7 @@ public class NavigationDrawerFragment extends Fragment {
     private NavigationDrawerAdapter mNavigationDrawerAdapter;
     private DrawerListItem[] mMenuItens;
     private RequestController mRequestController;
+    private CategoryTask mTask;
 
     public NavigationDrawerFragment() {
         mRequestController = new RequestController();
@@ -198,6 +201,9 @@ public class NavigationDrawerFragment extends Fragment {
         mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
         mDrawerListView.setAdapter(mNavigationDrawerAdapter);
         setItemChecked(mCurrentSelectedPosition);
+
+        dispararTask();
+
         return rootView;
     }
 
@@ -240,6 +246,20 @@ public class NavigationDrawerFragment extends Fragment {
      *   Métodos private
      **********************************************
      */
+    private void dispararTask() {
+        if (mTask == null) {
+            if (Util.isInternetConnected(getActivity())) {
+                startDownload();
+            }
+        }
+    }
+
+    private void startDownload() {
+        if (mTask == null || mTask.getStatus() != AsyncTask.Status.RUNNING) {
+            mTask = new CategoryTask();
+            mTask.execute();
+        }
+    }
 
     /**
      * Método para preencher os itens do array que será passado pro @NavigationDrawerAdapter.
@@ -302,7 +322,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * AsyncTask pra pegar a lista de categorias e preencher o NavigationDrawer
      */
-    class CategoryTask extends AsyncTask<Void, Void, List<Post>> {
+    class CategoryTask extends AsyncTask<Void, Void, List<Category>> {
 
         @Override
         protected void onPreExecute() {
@@ -310,13 +330,18 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         @Override
-        protected List<Post> doInBackground(Void... strings) {
-            return mRequestController.loadRecentPosts();
+        protected List<Category> doInBackground(Void... strings) {
+            return mRequestController.loadCategoryList();
         }
 
         @Override
-        protected void onPostExecute(List<Post> posts) {
+        protected void onPostExecute(List<Category> posts) {
             super.onPostExecute(posts);
+            for (int i = 0; i < posts.size(); i++) {
+                MyLog.print("categoria_id = " + posts.get(i).getId());
+                MyLog.print("categoria_title = " + posts.get(i).getTitle());
+                MyLog.print("======================");
+            }
         }
     }
 
