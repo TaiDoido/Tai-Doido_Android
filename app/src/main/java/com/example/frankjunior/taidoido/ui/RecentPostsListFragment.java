@@ -68,7 +68,7 @@ public class RecentPostsListFragment extends BaseFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_recent_posts_list, container, false);
         mCallbacks.setToolbar(view);
 
         mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
