@@ -2,11 +2,13 @@
     <string name="app_name">Tai Doido</string>
 
     <string name="progress_msg">Baixando informações</string>
+    <string name="refresh">ATUALIZAR</string>
 
     <!-- Mensagens de erro -->
     <string name="without_connection">Sem conexão</string>
     <string name="posts_error">Falha ao obter posts</string>
     <string name="date">data: %s</string>
+    <string name="no_connection_available">Nnehuma conexão disponível</string>
 
     <!-- Navigation Drawer -->
     <string name="navigation_drawer_recent_posts">Recent Posts</string>

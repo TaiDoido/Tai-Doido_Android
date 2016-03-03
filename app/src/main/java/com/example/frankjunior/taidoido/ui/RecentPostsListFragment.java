@@ -3,12 +3,14 @@ package com.example.frankjunior.taidoido.ui;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -25,7 +27,9 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class RecentPostsListFragment extends BaseFragment implements RecentPostListAdapter.OnClickPostListener {
+public class RecentPostsListFragment extends BaseFragment implements
+        RecentPostListAdapter.OnClickPostListener,
+        BaseFragment.ConnectionListener {
 
     private static final String ARG_ID = "id_argument";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
@@ -44,6 +48,7 @@ public class RecentPostsListFragment extends BaseFragment implements RecentPostL
     private boolean isPagination = false;
     private int mRecentPostsCurrentPage = FIRST_PAGE;
     private RequestController mRequestController;
+    private LinearLayout mRootPostsList;
 
     public static RecentPostsListFragment newInstance(long id) {
         Bundle args = new Bundle();
@@ -57,6 +62,7 @@ public class RecentPostsListFragment extends BaseFragment implements RecentPostL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRequestController = new RequestController();
+        setConnectionListener(this);
     }
 
     @Nullable
@@ -65,6 +71,7 @@ public class RecentPostsListFragment extends BaseFragment implements RecentPostL
         View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
         mCallbacks.setToolbar(view);
 
+        mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mTextMensagem = (TextView) view.findViewById(android.R.id.empty);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -103,6 +110,17 @@ public class RecentPostsListFragment extends BaseFragment implements RecentPostL
         dispararTask();
 
         return view;
+    }
+
+    @Override
+    public void onConnectionChanged(boolean hasConnection) {
+        if (!hasConnection) {
+            showConnectionSnackBar();
+        } else {
+            showProgress(LOADING);
+            resetRequest();
+            dispararTask();
+        }
     }
 
     /*
@@ -159,6 +177,19 @@ public class RecentPostsListFragment extends BaseFragment implements RecentPostL
             });
         }
     }
+
+    private void showConnectionSnackBar() {
+        Snackbar.make(mRootPostsList, R.string.no_connection_available, Snackbar.LENGTH_LONG)
+                .setAction(R.string.refresh, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showProgress(LOADING);
+                        resetRequest();
+                        dispararTask();
+                    }
+                }).show();
+    }
+
     /**
      * método usado para resetar valores iniciais,
      * usado no fisrt laoding e no pullToRefresh
