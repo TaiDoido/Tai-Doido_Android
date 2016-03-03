@@ -24,6 +24,7 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
     private static final int VIEW_TYPE_SELECTABLE = 0;
     private static final int VIEW_TYPE_SEPARATOR = 1;
     private static final int VIEW_TYPE_UNSELECTABLE = 2;
+    private static final int VIEW_TYPE_LABEL = 3;
 
     final private LayoutInflater mInflater;
     final private int mSelectableBackground;
@@ -66,6 +67,17 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
                     convertView.setBackgroundResource(0);
                 }
                 break;
+            case VIEW_TYPE_LABEL:
+                if (convertView == null) {
+                    convertView = mInflater.inflate(R.layout.list_item_label_navigation_drawer, parent, false);
+                    holder = new ViewHolder(convertView);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder) convertView.getTag();
+                }
+                DrawerListItem itemLabel = getItem(position);
+                holder.textView.setText(itemLabel.textLabel);
+                break;
         }
         return convertView;
     }
@@ -93,6 +105,9 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
     @Override
     public int getItemViewType(int position) {
         DrawerListItem item = getItem(position);
+        if (item.textLabel != null) {
+            return VIEW_TYPE_LABEL;
+        }
         if (!item.clickable) {
             return VIEW_TYPE_SEPARATOR;
         }

@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
@@ -55,10 +56,12 @@ public class NavigationDrawerFragment extends Fragment {
     private static final int ICON_CATEGORY = R.drawable.ic_action_label;
     private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
     private static final int ICON_ABOUT = R.drawable.ic_action_info;
-    private static String RECENT_POSTS = null;
-    private static String FAVORITES = null;
-    private static String SETTINGS = null;
-    private static String ABOUT = null;
+    private static String RECENT_POSTS = App.getContext().getString(R.string.navigation_drawer_recent_posts);
+    private static String FAVORITES = App.getContext().getString(R.string.navigation_drawer_favorites);
+    private static String SETTINGS = App.getContext().getString(R.string.navigation_drawer_settings);
+    private static String ABOUT = App.getContext().getString(R.string.navigation_drawer_about);
+    private static String LABEL_CATEGORY = App.getContext().getString(R.string.navigation_drawer_category_label);
+
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -121,6 +124,10 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+        mMenuItens = fillItensList(null);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(App.getContext(), mMenuItens);
+        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
+
         setItemChecked(mCurrentSelectedPosition);
         dispararTask();
         return rootView;
@@ -131,20 +138,6 @@ public class NavigationDrawerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
-        /*
-            OBS: essas constantes precisam ficar aqui no "onActivityCreated",
-            pq se colocar em algum método antes no ciclo de vida, o "getActivity()"
-            retorna null e estoura um NullPointerException.
-            Consequentemente, a chamada do "fillItensList(null)" tem que ficar aqui [ou depois]
-         */
-        RECENT_POSTS = getActivity().getString(R.string.navigation_drawer_recent_posts);
-        FAVORITES = getActivity().getString(R.string.navigation_drawer_favorites);
-        SETTINGS = getActivity().getString(R.string.navigation_drawer_settings);
-        ABOUT = getActivity().getString(R.string.navigation_drawer_about);
-
-        mMenuItens = fillItensList(null);
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
-        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
     }
 
     @Override
@@ -268,6 +261,7 @@ public class NavigationDrawerFragment extends Fragment {
         // se o categoryItems não for nulo, adicione o conteúdo dele no array.
         if (categoryItems != null) {
             menuItemList.add(new DrawerListItem()); // separador
+            menuItemList.add(new DrawerListItem(LABEL_CATEGORY));
             menuItemList.addAll(categoryItems);
             menuItemList.add(new DrawerListItem()); // separador
         }
@@ -275,9 +269,6 @@ public class NavigationDrawerFragment extends Fragment {
         menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_SETTINGS, SETTINGS));
         menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_ABOUT, ABOUT));
 
-        // transformando o ArrayList<> em um array[]
-        DrawerListItem[] menuItemArray = new DrawerListItem[menuItemList.size()];
-        menuItemArray = menuItemList.toArray(menuItemArray);
         return menuItemList;
     }
 

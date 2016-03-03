@@ -10,6 +10,7 @@ public class DrawerListItem {
     public final boolean selectable;
     public final int iconResource;
     public final String textTitle;
+    public final String textLabel;
 
     // construtor padrão para adicionar o separador
     public DrawerListItem() {
@@ -17,6 +18,16 @@ public class DrawerListItem {
         this.selectable = false;
         this.iconResource = 0;
         this.textTitle = null;
+        this.textLabel = null;
+    }
+
+    // construtor padrão para adicionar Label na lista
+    public DrawerListItem(String textLabel) {
+        this.clickable = false;
+        this.selectable = false;
+        this.iconResource = 0;
+        this.textTitle = null;
+        this.textLabel = textLabel;
     }
 
     // construtor para adicionar um item no NavigationDrawer
@@ -25,5 +36,6 @@ public class DrawerListItem {
         this.selectable = selectable;
         this.iconResource = iconResource;
         this.textTitle = textTitle;
+        this.textLabel = null;
     }
 }

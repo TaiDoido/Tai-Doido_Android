@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.View;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.util.MyLog;
 
 /**
  * Created by frankjunior on 25/02/16.
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        MyLog.print("click position = " + position);
         Bundle params = getIntent().getExtras();
         Fragment fragment = null;
         switch (position) {
