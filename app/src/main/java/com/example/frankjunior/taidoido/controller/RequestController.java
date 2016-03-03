@@ -1,5 +1,7 @@
 package com.example.frankjunior.taidoido.controller;
 
+import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.connection.CategoriesRequest;
 import com.example.frankjunior.taidoido.connection.RecentPostsRequest;
 import com.example.frankjunior.taidoido.model.Category;
@@ -13,7 +15,7 @@ import java.util.List;
  */
 public class RequestController {
 
-    private static final String BLOG_URL = "http://frankjunior.com.br/blog";
+    private static final String BLOG_URL = App.getContext().getString(R.string.tai_doido_url);
 
     private CategoriesRequest mCategoriesRequest;
     private RecentPostsRequest mRecentPostsRequest;

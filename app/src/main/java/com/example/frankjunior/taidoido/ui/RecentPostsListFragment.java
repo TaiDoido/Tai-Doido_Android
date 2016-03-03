@@ -112,6 +112,11 @@ public class RecentPostsListFragment extends BaseFragment implements
         return view;
     }
 
+    /**
+     * Evento que trata a falta [ou a volta] de conectividade
+     *
+     * @param hasConnection
+     */
     @Override
     public void onConnectionChanged(boolean hasConnection) {
         if (!hasConnection) {
@@ -178,6 +183,9 @@ public class RecentPostsListFragment extends BaseFragment implements
         }
     }
 
+    /**
+     * Método pra exibir um SnackBar, quando tiver sem conexão
+     */
     private void showConnectionSnackBar() {
         Snackbar.make(mRootPostsList, R.string.no_connection_available, Snackbar.LENGTH_LONG)
                 .setAction(R.string.refresh, new View.OnClickListener() {
