@@ -58,6 +58,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+            mDrawerLayout.closeDrawers();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     public void onFragmentCreateView(View view) {
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
@@ -66,14 +75,5 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mNavigationDrawerFragment.setUp();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
-            mDrawerLayout.closeDrawers();
-        } else {
-            super.onBackPressed();
-        }
     }
 }

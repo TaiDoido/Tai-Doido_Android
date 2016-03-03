@@ -2,6 +2,7 @@ package com.example.frankjunior.taidoido.ui;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -32,20 +33,6 @@ import java.util.List;
  */
 public class NavigationDrawerFragment extends Fragment {
 
-    public static final int RECENT_POSTS_ITEM = 0;
-    public static final int FAVORITES_ITEM = 1;
-    public static final int SEPARATOR_ITEM = 2;
-    public static final int SETTINGS_ITEM = 3;
-    public static final int ABOUT_ITEM = 4;
-
-    // constantes para construção dos itens da lista
-    private static final boolean CLICKABLE_ON = true;
-    private static final boolean CLICKABLE_OFF = false;
-    private static final int ICON_HOME = R.drawable.ic_action_home;
-    private static final int ICON_FAVORITE = R.drawable.ic_action_favorite;
-    private static final int ICON_CATEGORY = R.drawable.ic_action_label;
-    private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
-    private static final int ICON_ABOUT = R.drawable.ic_action_info;
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
@@ -64,6 +51,21 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private NavigationDrawerCallbacks mCallbacks;
 
+    public static final int RECENT_POSTS_ITEM = 0;
+    public static final int FAVORITES_ITEM = 1;
+    public static final int SEPARATOR_ITEM = 2;
+    public static final int SETTINGS_ITEM = 3;
+    public static final int ABOUT_ITEM = 4;
+
+    // constantes para construção dos itens da lista
+    private static final boolean CLICKABLE_ON = true;
+    private static final boolean CLICKABLE_OFF = false;
+    private static final int ICON_HOME = R.drawable.ic_action_home;
+    private static final int ICON_FAVORITE = R.drawable.ic_action_favorite;
+    private static final int ICON_CATEGORY = R.drawable.ic_action_label;
+    private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
+    private static final int ICON_ABOUT = R.drawable.ic_action_info;
+
     private int mCurrentSelectedPosition = 0;
     private boolean mUserLearnedDrawer;
     private View mFragmentContainerView;
@@ -76,19 +78,100 @@ public class NavigationDrawerFragment extends Fragment {
     private RequestController mRequestController;
     private CategoryTask mTask;
 
+    // Construtor
     public NavigationDrawerFragment() {
         mRequestController = new RequestController();
     }
 
-    private void userLearnedDrawer() {
-        if (!mUserLearnedDrawer) {
-            // The user manually opened the drawer; store this flag to prevent auto-showing
-            // the navigation drawer automatically in the future.
-            mUserLearnedDrawer = true;
-            SharedPreferences sp = PreferenceManager
-                    .getDefaultSharedPreferences(getActivity());
-            sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity;
+        if (context instanceof Activity) {
+            activity = (Activity) context;
+            try {
+                mCallbacks = (NavigationDrawerCallbacks) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
+            }
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Read in the flag indicating whether or not the user has demonstrated awareness of the
+        // drawer. See PREF_USER_LEARNED_DRAWER for details.
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+        if (savedInstanceState != null) {
+            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            mFromSavedInstanceState = true;
+        }
+        // Select either the default item (0) or the last selected item.
+        selectItem(mCurrentSelectedPosition);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(
+                R.layout.fragment_navigation_drawer, container, false);
+        mDrawerListView = (ListView) rootView.findViewById(R.id.option_list);
+        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                userLearnedDrawer();
+                selectItem(position);
+            }
+        });
+        setItemChecked(mCurrentSelectedPosition);
+        dispararTask();
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // Indicate that this fragment would like to influence the set of actions in the action bar.
+        setHasOptionsMenu(true);
+        /*
+            OBS: essas constantes precisam ficar aqui no "onActivityCreated",
+            pq se colocar em algum método antes no ciclo de vida, o "getActivity()"
+            retorna null e estoura um NullPointerException.
+            Consequentemente, a chamada do "fillItensList(null)" tem que ficar aqui [ou depois]
+         */
+        RECENT_POSTS = getActivity().getString(R.string.navigation_drawer_recent_posts);
+        FAVORITES = getActivity().getString(R.string.navigation_drawer_favorites);
+        SETTINGS = getActivity().getString(R.string.navigation_drawer_settings);
+        ABOUT = getActivity().getString(R.string.navigation_drawer_about);
+
+        mMenuItens = fillItensList(null);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
+        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Forward the new configuration the drawer toggle component.
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     public void setUp() {
@@ -153,99 +236,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Read in the flag indicating whether or not the user has demonstrated awareness of the
-        // drawer. See PREF_USER_LEARNED_DRAWER for details.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-
-        if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
-        }
-
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // Indicate that this fragment would like to influence the set of actions in the action bar.
-        setHasOptionsMenu(true);
-
-        /*
-            OBS: essas constantes precisam ficar aqui no "onActivityCreated",
-            pq se colocar em algum método antes no ciclo de vida, o "getActivity()"
-            retorna null e estoura um NullPointerException.
-            Consequentemente, a chamada do "fillItensArray(null)" tem que ficar aqui tb
-         */
-        RECENT_POSTS = getActivity().getString(R.string.navigation_drawer_recent_posts);
-        FAVORITES = getActivity().getString(R.string.navigation_drawer_favorites);
-        SETTINGS = getActivity().getString(R.string.navigation_drawer_settings);
-        ABOUT = getActivity().getString(R.string.navigation_drawer_about);
-
-        mMenuItens = fillItensArray(null);
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
-        mDrawerListView.setAdapter(mNavigationDrawerAdapter);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView = (ListView) rootView.findViewById(R.id.option_list);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                userLearnedDrawer();
-                selectItem(position);
-            }
-        });
-        setItemChecked(mCurrentSelectedPosition);
-
-        dispararTask();
-
-        return rootView;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Forward the new configuration the drawer toggle component.
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-    }
-
     /*
      **********************************************
      *   Métodos private
@@ -272,7 +262,7 @@ public class NavigationDrawerFragment extends Fragment {
      * @param categoryItems - itens da categoria que vem preenchido do AsyncTask
      * @return array de itens completamente preenchido
      */
-    private List<DrawerListItem> fillItensArray(List<DrawerListItem> categoryItems) {
+    private List<DrawerListItem> fillItensList(List<DrawerListItem> categoryItems) {
         List<DrawerListItem> menuItemList = new ArrayList<DrawerListItem>();
         // Adiciona os primeiros itens estáticos no array.
         menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_HOME, RECENT_POSTS));
@@ -292,6 +282,17 @@ public class NavigationDrawerFragment extends Fragment {
         DrawerListItem[] menuItemArray = new DrawerListItem[menuItemList.size()];
         menuItemArray = menuItemList.toArray(menuItemArray);
         return menuItemList;
+    }
+
+    private void userLearnedDrawer() {
+        if (!mUserLearnedDrawer) {
+            // The user manually opened the drawer; store this flag to prevent auto-showing
+            // the navigation drawer automatically in the future.
+            mUserLearnedDrawer = true;
+            SharedPreferences sp = PreferenceManager
+                    .getDefaultSharedPreferences(getActivity());
+            sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
+        }
     }
 
     private void selectItem(int position) {
@@ -347,9 +348,8 @@ public class NavigationDrawerFragment extends Fragment {
                 for (int i = 0; i < posts.size(); i++) {
                     menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_CATEGORY, posts.get(i).getTitle()));
                 }
-                mMenuItens = fillItensArray(menuItemList);
+                mMenuItens = fillItensList(menuItemList);
             }
-
             // atualizando o adapter e o "position" da lista
             mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
             mDrawerListView.setAdapter(mNavigationDrawerAdapter);
@@ -362,8 +362,6 @@ public class NavigationDrawerFragment extends Fragment {
                 }
             });
             setItemChecked(mCurrentSelectedPosition);
-
         }
     }
-
 }

@@ -25,7 +25,7 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class RecentPostsListFragment extends MainAbsFragment implements PostListAdapter.OnClickPostListener {
+public class RecentPostsListFragment extends MainAbsFragment implements RecentPostListAdapter.OnClickPostListener {
 
     private static final String ARG_ID = "id_argument";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
@@ -35,7 +35,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
     private final int WITHOUT_CONNECTION = 3;
     private final int FIRST_PAGE = 1;
     private PostTask mTask;
-    private PostListAdapter mAdapter;
+    private RecentPostListAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private TextView mTextMensagem;
     private ProgressBar mProgressBar;
@@ -93,7 +93,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
         mRecyclerView.setLayoutManager(layoutManager);
         PaginationHandle();
 
-        mAdapter = new PostListAdapter(getActivity(), mPostList);
+        mAdapter = new RecentPostListAdapter(getActivity(), mPostList);
         mAdapter.addOnClickPostListener(RecentPostsListFragment.this);
         mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
 
@@ -104,6 +104,22 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
 
         return view;
     }
+
+    /*
+      **********************************************
+      *   Click da lista
+      **********************************************
+      */
+    @Override
+    public void onClickPost(View v, int position, Post post) {
+        //TODO: tratar aqui o click da lista
+    }
+
+    /*
+      **********************************************
+      *   Métodos private
+      **********************************************
+      */
 
     // método que trata o evento de pagination
     private void PaginationHandle() {
@@ -125,7 +141,6 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
                         }
                     }
                 }
-
                 private boolean canScrollerLastItens() {
                     // Se chegou na ultima pagina, retorne false
                     if (mRecentPostsCurrentPage < RecentPostsRequest.getTotalPages()) {
@@ -134,7 +149,6 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
                         return false;
                     }
                 }
-
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
                     RecentPostsRequest.setPageNumber(mRecentPostsCurrentPage);
@@ -142,29 +156,13 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
                     dispararTask();
                     mLoading = true;
                 }
-
             });
         }
     }
-
-    /*
-      **********************************************
-      *   Click da lista
-      **********************************************
-      */
-    @Override
-    public void onClickPost(View v, int position, Post post) {
-        //TODO: tratar aqui o click da lista
-    }
-
-    /*
-      **********************************************
-      *   Métodos private
-      **********************************************
-      */
-
-    // método usado para resetar valores iniciais,
-    // usado no fisrt laoding e no pullToRefresh
+    /**
+     * método usado para resetar valores iniciais,
+     * usado no fisrt laoding e no pullToRefresh
+     */
     private void resetRequest() {
         isPagination = false;
         mPostList.clear();
@@ -227,10 +225,8 @@ public class RecentPostsListFragment extends MainAbsFragment implements PostList
         }
     }
 
-    /*
-      **********************************************
-      *   AsyncTask pra pegar os posts
-      **********************************************
+    /**
+      * AsyncTask pra pegar os Recent Posts
       */
     class PostTask extends AsyncTask<Void, Void, List<Post>>{
 

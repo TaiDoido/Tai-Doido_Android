@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by frankjunior on 18/01/16.
  */
-public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecentPostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
@@ -26,7 +26,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Post> mPostList;
     private OnClickPostListener mListener;
 
-    public PostListAdapter(Context context, List<Post> posts) {
+    public RecentPostListAdapter(Context context, List<Post> posts) {
         mContext = context;
         mPostList = posts;
     }
