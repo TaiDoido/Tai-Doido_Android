@@ -33,6 +33,11 @@ import java.util.List;
  */
 public class NavigationDrawerFragment extends Fragment {
 
+    public static final int RECENT_POSTS_ITEM = 0;
+    public static final int FAVORITES_ITEM = 1;
+    public static final int SEPARATOR_ITEM = 2;
+    public static final int SETTINGS_ITEM = 3;
+    public static final int ABOUT_ITEM = 4;
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
@@ -42,21 +47,6 @@ public class NavigationDrawerFragment extends Fragment {
      * Remember the position of the selected item.
      */
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-    private static String RECENT_POSTS = null;
-    private static String FAVORITES = null;
-    private static String SETTINGS = null;
-    private static String ABOUT = null;
-    /**
-     * A pointer to the current callbacks instance (the Activity).
-     */
-    private NavigationDrawerCallbacks mCallbacks;
-
-    public static final int RECENT_POSTS_ITEM = 0;
-    public static final int FAVORITES_ITEM = 1;
-    public static final int SEPARATOR_ITEM = 2;
-    public static final int SETTINGS_ITEM = 3;
-    public static final int ABOUT_ITEM = 4;
-
     // constantes para construção dos itens da lista
     private static final boolean CLICKABLE_ON = true;
     private static final boolean CLICKABLE_OFF = false;
@@ -65,8 +55,15 @@ public class NavigationDrawerFragment extends Fragment {
     private static final int ICON_CATEGORY = R.drawable.ic_action_label;
     private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
     private static final int ICON_ABOUT = R.drawable.ic_action_info;
-
-    private int mCurrentSelectedPosition = 0;
+    private static String RECENT_POSTS = null;
+    private static String FAVORITES = null;
+    private static String SETTINGS = null;
+    private static String ABOUT = null;
+    /**
+     * A pointer to the current callbacks instance (the Activity).
+     */
+    private NavigationDrawerCallbacks mCallbacks;
+    private int mCurrentSelectedPosition = RECENT_POSTS_ITEM;
     private boolean mUserLearnedDrawer;
     private View mFragmentContainerView;
     private DrawerLayout mDrawerLayout;

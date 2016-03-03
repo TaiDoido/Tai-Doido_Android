@@ -67,7 +67,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
     }
 
-    public void onFragmentCreateView(View view) {
+    /**
+     * Método usado em forma de callback, pelo @BaseFragment
+     * que por sua vez cada fragment do NavigationDrawer deve extender.
+     * Sendo assim, a Toolbar é configurada pra cada fragment através desse método
+     *
+     * @param view View inflada no Fragment
+     */
+    public void setToolbar(View view) {
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);

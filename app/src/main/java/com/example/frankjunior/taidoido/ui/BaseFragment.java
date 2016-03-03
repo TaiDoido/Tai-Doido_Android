@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
-public abstract class MainAbsFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     MainActivity mCallbacks;
 

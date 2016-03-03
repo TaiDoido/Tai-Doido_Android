@@ -25,7 +25,7 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class RecentPostsListFragment extends MainAbsFragment implements RecentPostListAdapter.OnClickPostListener {
+public class RecentPostsListFragment extends BaseFragment implements RecentPostListAdapter.OnClickPostListener {
 
     private static final String ARG_ID = "id_argument";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
@@ -63,7 +63,7 @@ public class RecentPostsListFragment extends MainAbsFragment implements RecentPo
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
-        mCallbacks.onFragmentCreateView(view);
+        mCallbacks.setToolbar(view);
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mTextMensagem = (TextView) view.findViewById(android.R.id.empty);
