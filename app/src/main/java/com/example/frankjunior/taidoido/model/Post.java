@@ -12,6 +12,7 @@ public class Post implements Serializable {
     private String image;
     private String author;
     private String date;
+    private String content;
 
     public String getId() {
         return id;
@@ -51,5 +52,13 @@ public class Post implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

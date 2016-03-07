@@ -1,0 +1,25 @@
+body {
+  font-family: 'Oxygen', sans-serif;
+  padding: 10px;
+  line-height: 28px;
+  font-weight: normal;
+  font-size: 12pt;
+  text-align:justify;
+  text-justify:inter-word;
+}
+h, h1, h2, h3, h4, h5 {
+  margin: 0;
+  border: 0;
+  font-size: 20pt;
+  text-align:left;
+  font-weight: normal;
+}
+
+#container {
+  margin-top:10px;
+  width:100%;
+  word-wrap:break-word;
+}
+img {
+     max-width: 90%;
+}

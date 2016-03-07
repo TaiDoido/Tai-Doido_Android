@@ -1,5 +1,6 @@
 package com.example.frankjunior.taidoido.ui;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -49,6 +50,7 @@ public class RecentPostsListFragment extends BaseFragment implements
     private int mRecentPostsCurrentPage = FIRST_PAGE;
     private RequestController mRequestController;
     private LinearLayout mRootPostsList;
+    private boolean isPaused = false;
 
     public static RecentPostsListFragment newInstance(long id) {
         Bundle args = new Bundle();
@@ -112,6 +114,12 @@ public class RecentPostsListFragment extends BaseFragment implements
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        isPaused = true;
+    }
+
     /**
      * Evento que trata a falta [ou a volta] de conectividade
      *
@@ -119,12 +127,14 @@ public class RecentPostsListFragment extends BaseFragment implements
      */
     @Override
     public void onConnectionChanged(boolean hasConnection) {
-        if (!hasConnection) {
-            showConnectionSnackBar();
-        } else {
-            showProgress(LOADING);
-            resetRequest();
-            dispararTask();
+        if (!isPaused) {
+            if (!hasConnection) {
+                showConnectionSnackBar();
+            } else {
+                showProgress(LOADING);
+                resetRequest();
+                dispararTask();
+            }
         }
     }
 
@@ -135,7 +145,9 @@ public class RecentPostsListFragment extends BaseFragment implements
       */
     @Override
     public void onClickPost(View v, int position, Post post) {
-        //TODO: tratar aqui o click da lista
+        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+        intent.putExtra(PostDetailActivity.EXTRA_POST, post);
+        startActivity(intent);
     }
 
     /*
@@ -164,6 +176,7 @@ public class RecentPostsListFragment extends BaseFragment implements
                         }
                     }
                 }
+
                 private boolean canScrollerLastItens() {
                     // Se chegou na ultima pagina, retorne false
                     if (mRecentPostsCurrentPage < RecentPostsRequest.getTotalPages()) {
@@ -172,6 +185,7 @@ public class RecentPostsListFragment extends BaseFragment implements
                         return false;
                     }
                 }
+
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
                     RecentPostsRequest.setPageNumber(mRecentPostsCurrentPage);
@@ -265,9 +279,9 @@ public class RecentPostsListFragment extends BaseFragment implements
     }
 
     /**
-      * AsyncTask pra pegar os Recent Posts
-      */
-    class PostTask extends AsyncTask<Void, Void, List<Post>>{
+     * AsyncTask pra pegar os Recent Posts
+     */
+    class PostTask extends AsyncTask<Void, Void, List<Post>> {
 
         @Override
         protected void onPreExecute() {

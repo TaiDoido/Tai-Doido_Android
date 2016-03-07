@@ -1,6 +1,7 @@
 package com.example.frankjunior.taidoido.connection;
 
 import com.example.frankjunior.taidoido.model.Post;
+import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
 
 import org.json.JSONArray;
@@ -28,6 +29,7 @@ public class RecentPostsRequest {
     private static final String KEY_AUTHOR_NAME = "nickname";
     private static final String KEY_DATE = "date";
     private static final String KEY_TOTAL_PAGES = "pages";
+    private static final String KEY_CONTENT = "content";
     private static int pageNumber = 1;
     private static int mTotalPages = 0;
     private static String mBlogURL = null;
@@ -125,8 +127,10 @@ public class RecentPostsRequest {
         String author = null;
         String date = null;
         String image = null;
+        String content = null;
         try {
             id = jsonEntry.getString(KEY_ID);
+            content = jsonEntry.getString(KEY_CONTENT);
             title = jsonEntry.getString(KEY_TITLE);
             author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
             date = jsonEntry.getString(KEY_DATE);
@@ -138,13 +142,14 @@ public class RecentPostsRequest {
                 Mas no cenário real, ele não vai cair aqui,
                 pq todos os posts vão ter "featured image"
              */
-            e.printStackTrace();
+            MyLog.printError("Item do Json não existe", e);
         }
         post.setId(id);
         post.setTitle(title);
         post.setImage(image);
         post.setAuthor(author);
         post.setDate(date);
+        post.setContent(content);
         return post;
     }
 }
