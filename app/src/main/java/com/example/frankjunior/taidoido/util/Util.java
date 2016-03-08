@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class Util {
 
     public static final int INVALID_POSITION = -1;
-    private static final String TEMPLATE_HTML = "template.xml";
+    private static final String TEMPLATE_HTML = "template.html";
     private static final String CONTENT = "#CONTEUDO#";
     private static final String IFRAME_OPEN_TAG = "<iframe";
     private static final String IFRAME_CLOSE_TAG = "</iframe>";
@@ -74,7 +74,6 @@ public class Util {
     }
 
     public static String streamToString(InputStream is) throws IOException {
-
         byte[] bytes = new byte[BUFFER_SIZE];
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int lidos;
@@ -94,10 +93,8 @@ public class Util {
                 findAgain = false;
                 // finding first <iframe> tag
                 int iframeStartIndex = newHtml.indexOf(IFRAME_OPEN_TAG);
-
                 // if found...
                 if (iframeStartIndex > -1) {
-
                     // find the close tag </iframe>
                     String iframeCloseTag = IFRAME_CLOSE_TAG;
                     int iframeCloseTagLength = iframeCloseTag.length();
@@ -106,26 +103,20 @@ public class Util {
                         iframeEndIndex = newHtml.indexOf(CLOSE_TAG, iframeStartIndex);
                         iframeCloseTagLength = 0;
                     }
-
                     // get iframe complete tag
                     String iframeTag = newHtml.substring(iframeStartIndex, iframeEndIndex + iframeCloseTagLength);
-
                     // if the iframe tag has youtube...
                     if (iframeTag.contains(YOUTUBE)) {
-
                         // finding video id
                         try {
                             Pattern compiledPattern = Pattern.compile(PATTERN);
                             Matcher matcher = compiledPattern.matcher(iframeTag);
-
                             if (matcher.find()) {
                                 String videoId = matcher.group(1);
-
                                 String videoLink =
                                         "<a href='http://www.youtube.com/watch?v=" + videoId + "'>" +
                                                 "<img src='http://img.youtube.com/vi/" + videoId + "/0.jpg'>" +
                                                 "</a>";
-
                                 newHtml = newHtml.replace(iframeTag, videoLink);
                                 findAgain = true;
                             }
