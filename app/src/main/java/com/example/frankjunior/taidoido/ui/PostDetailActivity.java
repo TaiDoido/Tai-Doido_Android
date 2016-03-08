@@ -11,9 +11,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.model.Post;
+import com.squareup.picasso.Picasso;
 
 public class PostDetailActivity extends AppCompatActivity {
 
@@ -51,6 +55,14 @@ public class PostDetailActivity extends AppCompatActivity {
      * Customize the toolbar
      */
     private void customizeToolbar() {
+        // Set the status bar to dark-semi-transparentish
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
         if (mPost.getTitle() != null) {
             setTitle(mPost.getTitle());
         } else {
@@ -58,6 +70,8 @@ public class PostDetailActivity extends AppCompatActivity {
             setTitle(getResources().getString(barTitle));
         }
 
+        ImageView featuredImage = (ImageView) findViewById(R.id.featured_image);
+        Picasso.with(this).load(mPost.getImage()).into(featuredImage);
         CollapsingToolbarLayout collapsingToolbarLayout =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(getTitle());
