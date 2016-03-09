@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.ui;
+package com.example.frankjunior.taidoido.ui.fragment;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.example.frankjunior.taidoido.ui.MainActivity;
 import com.example.frankjunior.taidoido.util.Util;
 
 public abstract class BaseFragment extends Fragment {

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.model.Post;
+import com.example.frankjunior.taidoido.ui.fragment.PostDetailFragment;
 import com.squareup.picasso.Picasso;
 
 public class PostDetailActivity extends AppCompatActivity {

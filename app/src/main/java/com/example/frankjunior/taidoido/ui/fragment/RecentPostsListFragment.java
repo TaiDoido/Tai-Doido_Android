@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.ui;
+package com.example.frankjunior.taidoido.ui.fragment;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,6 +23,8 @@ import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.connection.RecentPostsRequest;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Post;
+import com.example.frankjunior.taidoido.ui.PostDetailActivity;
+import com.example.frankjunior.taidoido.ui.RecentPostListAdapter;
 import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;

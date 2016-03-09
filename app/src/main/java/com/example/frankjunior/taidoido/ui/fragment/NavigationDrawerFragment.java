@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.ui;
+package com.example.frankjunior.taidoido.ui.fragment;
 
 
 import android.app.Activity;
@@ -24,6 +24,7 @@ import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
+import com.example.frankjunior.taidoido.ui.NavigationDrawerAdapter;
 import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;

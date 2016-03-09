@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.ui;
+package com.example.frankjunior.taidoido.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

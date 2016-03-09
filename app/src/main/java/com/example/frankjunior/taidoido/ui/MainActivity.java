@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.Window;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.ui.fragment.NavigationDrawerFragment;
+import com.example.frankjunior.taidoido.ui.fragment.RecentPostsListFragment;
 import com.example.frankjunior.taidoido.util.MyLog;
 
 /**
