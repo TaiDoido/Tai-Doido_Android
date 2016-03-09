@@ -5,6 +5,8 @@
     <string name="progress_msg">Baixando informações</string>
     <string name="refresh">ATUALIZAR</string>
 
+    <string name="post_image_transition_name">featured_image</string>
+
     <!-- Mensagens de erro -->
     <string name="without_connection">Sem conexão</string>
     <string name="posts_error">Falha ao obter posts</string>

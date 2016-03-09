@@ -1,5 +1,6 @@
 body {
-  font-family: 'Oxygen', sans-serif;
+  /* Essa cor de background, é a mesma que @color/theme_background */
+  background-color: #e0e5e9;
   padding: 10px;
   line-height: 28px;
   font-weight: normal;

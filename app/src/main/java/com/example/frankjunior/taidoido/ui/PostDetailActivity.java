@@ -70,7 +70,7 @@ public class PostDetailActivity extends AppCompatActivity {
             setTitle(getResources().getString(barTitle));
         }
 
-        ImageView featuredImage = (ImageView) findViewById(R.id.featured_image);
+        ImageView featuredImage = (ImageView) findViewById(R.id.imgPost);
         Picasso.with(this).load(mPost.getImage()).into(featuredImage);
         CollapsingToolbarLayout collapsingToolbarLayout =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);

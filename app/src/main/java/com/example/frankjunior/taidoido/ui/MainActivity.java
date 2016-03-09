@@ -6,8 +6,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeBounds;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.util.MyLog;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setupAnimations();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -84,5 +87,18 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mNavigationDrawerFragment.setUp();
+    }
+
+    /*
+     **********************************************
+     *   Métodos private
+     **********************************************
+     */
+    private void setupAnimations() {
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        ChangeBounds changeBounds = new ChangeBounds();
+        changeBounds.setDuration(10000);
+        getWindow().setExitTransition(changeBounds);
+        getWindow().setEnterTransition(changeBounds);
     }
 }
