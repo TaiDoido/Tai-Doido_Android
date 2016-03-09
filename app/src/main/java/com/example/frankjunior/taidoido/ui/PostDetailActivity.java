@@ -5,15 +5,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.model.Post;
@@ -23,6 +26,9 @@ import com.squareup.picasso.Picasso;
 public class PostDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POST = "extra_object";
+    private static final int MENU_HOME = android.R.id.home;
+    private static final int MENU_FAVORITE = R.id.favorite;
+    private static final int MENU_SHARE = R.id.share;
     private Post mPost;
 
     @Override
@@ -41,10 +47,22 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_post_detail, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
+            case MENU_HOME:
+                ActivityCompat.finishAfterTransition(PostDetailActivity.this);
+                break;
+            case MENU_FAVORITE:
+                Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
+                break;
+            case MENU_SHARE:
+                Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
@@ -52,6 +70,11 @@ public class PostDetailActivity extends AppCompatActivity {
         return true;
     }
 
+     /*
+     **********************************************
+     *   Métodos private
+     **********************************************
+     */
     /**
      * Customize the toolbar
      */
@@ -87,7 +110,7 @@ public class PostDetailActivity extends AppCompatActivity {
      *
      * @param fragment
      */
-    protected void changeFragment(@NonNull Fragment fragment) {
+    private void changeFragment(@NonNull Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if (fragmentManager.findFragmentByTag(fragment.getClass().toString()) != null) {
