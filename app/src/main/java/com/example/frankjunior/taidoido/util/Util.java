@@ -7,11 +7,13 @@ import android.net.NetworkInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by frankjunior on 24/02/16.
@@ -53,17 +55,22 @@ public class Util {
      *   Connection
      **********************************************
      */
-    public static HttpURLConnection connect(String urlFile) throws IOException {
-        final int SECONDS = 1000;
-        URL url = new URL(urlFile);
-        HttpURLConnection conexao = (HttpURLConnection) url.openConnection();
-        conexao.setReadTimeout(10 * SECONDS);
-        conexao.setConnectTimeout(15 * SECONDS);
-        conexao.setRequestMethod("GET");
-        conexao.setDoInput(true);
-        conexao.setDoOutput(false);
-        conexao.connect();
-        return conexao;
+
+    /**
+     * Método que faz a requisição e o donwload do JSON
+     *
+     * @param url da requisição
+     * @return JSON em formato de String
+     * @throws IOException
+     */
+    public static String doGetRequest(String url) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
     public static boolean isInternetConnected(Context context) {
@@ -136,22 +143,5 @@ public class Util {
             MyLog.printError("error", e);
         }
         return newHtml;
-    }
-
-    /**
-     * Método auxiliar para converter os bytes recem baixados de um InputStream para uma String
-     *
-     * @param is - INputStream recem baixado
-     * @return - String com o resultado
-     * @throws IOException
-     */
-    public static String bytesToString(InputStream is) throws IOException {
-        byte[] buffer = new byte[BUFFER_SIZE];
-        ByteArrayOutputStream bufferzao = new ByteArrayOutputStream();
-        int bytesLidos;
-        while ((bytesLidos = is.read(buffer)) != -1) {
-            bufferzao.write(buffer, 0, bytesLidos);
-        }
-        return new String(bufferzao.toByteArray(), "UTF-8");
     }
 }

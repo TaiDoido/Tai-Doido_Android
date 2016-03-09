@@ -1,14 +1,13 @@
 package com.example.frankjunior.taidoido.connection;
 
 import com.example.frankjunior.taidoido.model.Category;
+import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,16 +35,10 @@ public class CategoriesRequest {
     public List<Category> loadCategoryList() {
         try {
             String categoryListJson = mBlogURL + CATEGORY_LIST_API;
-            HttpURLConnection conexao = Util.connect(categoryListJson);
-
-            int resposta = conexao.getResponseCode();
-            if (resposta == HttpURLConnection.HTTP_OK) {
-                InputStream is = conexao.getInputStream();
-                String json = Util.bytesToString(is);
-                return readJsonCategoryList(json);
-            }
+            String json = Util.doGetRequest(categoryListJson);
+            return readJsonCategoryList(json);
         } catch (Exception e) {
-            e.printStackTrace();
+            MyLog.printError("Erro em fazer o donwload da lista de categorias", e);
         }
         return null;
     }
@@ -83,7 +76,7 @@ public class CategoriesRequest {
             id = jsonEntry.getString(KEY_ID);
             title = jsonEntry.getString(KEY_TITLE);
         } catch (JSONException e) {
-            e.printStackTrace();
+            MyLog.printError("Erro em fazer parser json", e);
         }
         category.setId(id);
         category.setTitle(title);

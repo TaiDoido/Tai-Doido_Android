@@ -8,8 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +28,7 @@ public class RecentPostsRequest {
     private static final String KEY_DATE = "date";
     private static final String KEY_TOTAL_PAGES = "pages";
     private static final String KEY_CONTENT = "content";
+    private static final String RECENT_POSTS_PAGINATION_API = "/api/get_recent_posts/?page=";
     private static int pageNumber = 1;
     private static int mTotalPages = 0;
     private static String mBlogURL = null;
@@ -74,17 +73,11 @@ public class RecentPostsRequest {
      */
     public List<Post> loadRecentPosts() {
         try {
-            String recentPostsJson = mBlogURL + "/api/get_recent_posts/?page=" + pageNumber;
-            HttpURLConnection conexao = Util.connect(recentPostsJson);
-
-            int resposta = conexao.getResponseCode();
-            if (resposta == HttpURLConnection.HTTP_OK) {
-                InputStream is = conexao.getInputStream();
-                String json = Util.bytesToString(is);
-                return readJsonRecentPosts(json);
-            }
+            String recentPostsJson = mBlogURL + RECENT_POSTS_PAGINATION_API + pageNumber;
+            String json = Util.doGetRequest(recentPostsJson);
+            return readJsonRecentPosts(json);
         } catch (Exception e) {
-            e.printStackTrace();
+            MyLog.printError("Erro em fazer o donwload dos Recent Posts", e);
         }
         return null;
     }
@@ -142,7 +135,8 @@ public class RecentPostsRequest {
                 Mas no cenário real, ele não vai cair aqui,
                 pq todos os posts vão ter "featured image"
              */
-            MyLog.printError("Item do Json não existe", e);
+            //TODO: descomentar essa linha quando estiver no cenário real
+//            MyLog.printError("Item do Json não existe", e);
         }
         post.setId(id);
         post.setTitle(title);
