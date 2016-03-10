@@ -27,6 +27,7 @@ public class RecentPostsRequest {
     private static final String KEY_AUTHOR_NAME = "nickname";
     private static final String KEY_DATE = "date";
     private static final String KEY_TOTAL_PAGES = "pages";
+    private static final String KEY_URL = "url";
     private static final String KEY_CONTENT = "content";
     private static final String RECENT_POSTS_PAGINATION_API = "/api/get_recent_posts/?page=";
     private static int pageNumber = 1;
@@ -121,12 +122,14 @@ public class RecentPostsRequest {
         String date = null;
         String image = null;
         String content = null;
+        String url = null;
         try {
             id = jsonEntry.getString(KEY_ID);
             content = jsonEntry.getString(KEY_CONTENT);
             title = jsonEntry.getString(KEY_TITLE);
             author = jsonEntry.getJSONObject(KEY_AUTHOR).getString(KEY_AUTHOR_NAME);
             date = jsonEntry.getString(KEY_DATE);
+            url = jsonEntry.getString(KEY_URL);
             image = jsonEntry.getString(KEY_FEATURED_IMAGE);
         } catch (JSONException e) {
             /*
@@ -144,6 +147,7 @@ public class RecentPostsRequest {
         post.setAuthor(author);
         post.setDate(date);
         post.setContent(content);
+        post.setUrl(url);
         return post;
     }
 }

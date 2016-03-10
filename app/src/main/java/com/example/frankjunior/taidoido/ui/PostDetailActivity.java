@@ -9,7 +9,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,9 +29,9 @@ public class PostDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POST = "extra_object";
     private static final int MENU_HOME = android.R.id.home;
-    private static final int MENU_FAVORITE = R.id.favorite;
-    private static final int MENU_SHARE = R.id.share;
+    private static final int MENU_FAVORITE = R.id.menu_favorite;
     private Post mPost;
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class PostDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_detail, menu);
+        actionShareButton(menu);
         return true;
     }
 
@@ -60,9 +63,6 @@ public class PostDetailActivity extends AppCompatActivity {
                 break;
             case MENU_FAVORITE:
                 Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
-                break;
-            case MENU_SHARE:
-                Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
@@ -119,6 +119,30 @@ public class PostDetailActivity extends AppCompatActivity {
             fragmentTransaction.replace(R.id.place_holder, fragment, fragment.getClass().toString());
         }
         fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    /**
+     * Método que executa a ação de share.
+     *
+     * @param menu
+     */
+    private void actionShareButton(Menu menu) {
+        MenuItem shareItem = menu.findItem(R.id.menu_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat
+                .getActionProvider(shareItem);
+        mShareActionProvider.setShareIntent(createShareIntent());
+    }
+
+    /**
+     * Método que cria a intent de compartilhamento
+     *
+     * @return
+     */
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType(getString(R.string.share_intent_type));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mPost.getUrl());
+        return shareIntent;
     }
 
 }

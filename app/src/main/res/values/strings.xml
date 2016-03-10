@@ -21,4 +21,9 @@
     <string name="navigation_drawer_category_label">Categorias</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Itens de Menu -->
+    <string name="menu_share">Share</string>
+    <string name="menu_favorite">Favoritos</string>
+    <string name="share_intent_type">text/plain</string>
 </resources>

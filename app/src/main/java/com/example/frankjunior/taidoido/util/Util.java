@@ -20,7 +20,7 @@ import okhttp3.Response;
  */
 public class Util {
 
-    public static final int INVALID_POSITION = -1;
+    private static final int INVALID_POSITION = -1;
     private static final String TEMPLATE_HTML = "template.html";
     private static final String CONTENT = "#CONTEUDO#";
     private static final String IFRAME_OPEN_TAG = "<iframe";
@@ -80,17 +80,6 @@ public class Util {
         return (info != null && info.isConnected());
     }
 
-    public static String streamToString(InputStream is) throws IOException {
-        byte[] bytes = new byte[BUFFER_SIZE];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int lidos;
-        while ((lidos = is.read(bytes)) > 0) {
-            baos.write(bytes, 0, lidos);
-        }
-        return new String(baos.toByteArray());
-    }
-
-
     public static String formatHtml(Context ctx, String html) {
         String newHtml = html;
         newHtml = findYoutubeTag(newHtml);
@@ -108,6 +97,16 @@ public class Util {
       *   Métodos private
       **********************************************
       */
+
+    private static String streamToString(InputStream is) throws IOException {
+        byte[] bytes = new byte[BUFFER_SIZE];
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int lidos;
+        while ((lidos = is.read(bytes)) > 0) {
+            baos.write(bytes, 0, lidos);
+        }
+        return new String(baos.toByteArray());
+    }
 
     /**
      * Função pra procurar por tags do Youtube
