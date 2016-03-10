@@ -23,6 +23,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Itens de Menu -->
+    <string name="menu_search">Search</string>
     <string name="menu_share">Share</string>
     <string name="menu_favorite">Favoritos</string>
     <string name="share_intent_type">text/plain</string>
