@@ -13,7 +13,7 @@
         android:background="@color/colorPrimary"
         android:clickable="true"
         android:orientation="vertical"
-        android:paddingBottom="20dp">
+        android:paddingBottom="@dimen/navigation_drawer_header_padding_bottom">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -26,8 +26,8 @@
 
             <ImageView
                 android:id="@+id/profile_picture"
-                android:layout_width="94dp"
-                android:layout_height="94dp"
+                android:layout_width="@dimen/navigation_drawer_header_image_size"
+                android:layout_height="@dimen/navigation_drawer_header_image_size"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
@@ -52,6 +52,6 @@
         android:layout_height="match_parent"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
-        android:dividerHeight="0dp" />
+        android:dividerHeight="@dimen/navigation_drawer_divider_height" />
 
 </LinearLayout>

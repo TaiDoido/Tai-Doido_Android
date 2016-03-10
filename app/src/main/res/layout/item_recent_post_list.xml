@@ -11,7 +11,7 @@
         android:layout_height="60dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_item_list_image"
         android:transitionName="@string/post_image_transition_name" />
     <TextView
         android:id="@+id/txtTitle"

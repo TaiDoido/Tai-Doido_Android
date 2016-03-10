@@ -93,6 +93,29 @@ public class Util {
 
     public static String formatHtml(Context ctx, String html) {
         String newHtml = html;
+        newHtml = findYoutubeTag(newHtml);
+        try {
+            String template = streamToString(ctx.getAssets().open(TEMPLATE_HTML));
+            newHtml = template.replaceAll(CONTENT, newHtml);
+        } catch (IOException e) {
+            MyLog.printError("error", e);
+        }
+        return newHtml;
+    }
+
+     /*
+      **********************************************
+      *   Métodos private
+      **********************************************
+      */
+
+    /**
+     * Função pra procurar por tags do Youtube
+     *
+     * @param newHtml
+     * @return
+     */
+    private static String findYoutubeTag(String newHtml) {
         try {
             // searching for youtube iframe tags
             boolean findAgain;
@@ -134,13 +157,7 @@ public class Util {
                 }
             } while (findAgain);
         } catch (Exception e) {
-            MyLog.printError("error", e);
-        }
-        try {
-            String template = streamToString(ctx.getAssets().open(TEMPLATE_HTML));
-            newHtml = template.replaceAll(CONTENT, newHtml);
-        } catch (IOException e) {
-            MyLog.printError("error", e);
+            MyLog.printError("error to find youtube tag", e);
         }
         return newHtml;
     }
