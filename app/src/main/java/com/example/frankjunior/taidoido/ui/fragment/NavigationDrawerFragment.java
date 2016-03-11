@@ -75,7 +75,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private ListView mDrawerListView;
     private NavigationDrawerAdapter mNavigationDrawerAdapter;
-    private List<DrawerListItem> mMenuItens = new ArrayList<DrawerListItem>();
+    private List<DrawerListItem> mNavigationDrawerMenuItens = new ArrayList<DrawerListItem>();
     private RequestController mRequestController;
     private CategoryTask mTask;
 
@@ -125,8 +125,8 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mMenuItens = fillItensList(null);
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(App.getContext(), mMenuItens);
+        mNavigationDrawerMenuItens = fillItensList(null);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(App.getContext(), mNavigationDrawerMenuItens);
         mDrawerListView.setAdapter(mNavigationDrawerAdapter);
 
         setItemChecked(mCurrentSelectedPosition);
@@ -337,10 +337,10 @@ public class NavigationDrawerFragment extends Fragment {
                 for (int i = 0; i < posts.size(); i++) {
                     menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_CATEGORY, posts.get(i).getTitle()));
                 }
-                mMenuItens = fillItensList(menuItemList);
+                mNavigationDrawerMenuItens = fillItensList(menuItemList);
             }
             // atualizando o adapter e o "position" da lista
-            mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mMenuItens);
+            mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mNavigationDrawerMenuItens);
             mDrawerListView.setAdapter(mNavigationDrawerAdapter);
             mNavigationDrawerAdapter.notifyDataSetChanged();
             mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -3,12 +3,15 @@ package com.example.frankjunior.taidoido.ui;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_list, menu);
+        actionSearchButton(menu);
         return true;
     }
 
@@ -109,5 +113,28 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         changeBounds.setDuration(10000);
         getWindow().setExitTransition(changeBounds);
         getWindow().setEnterTransition(changeBounds);
+    }
+
+    /**
+     * Método que executa a ação de search.
+     *
+     * @param menu
+     */
+    private void actionSearchButton(Menu menu) {
+        final MenuItem searchItem = menu.findItem(R.id.menu_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint(getString(R.string.menu_search_hint));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                MenuItemCompat.collapseActionView(searchItem);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 }

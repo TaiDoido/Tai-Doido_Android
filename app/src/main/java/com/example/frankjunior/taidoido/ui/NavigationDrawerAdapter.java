@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
 
-    private static final int VIEW_TYPE_COUNT = 3;
+    private static final int VIEW_TYPE_COUNT = 4;
     private static final int VIEW_TYPE_SELECTABLE = 0;
     private static final int VIEW_TYPE_SEPARATOR = 1;
     private static final int VIEW_TYPE_UNSELECTABLE = 2;
