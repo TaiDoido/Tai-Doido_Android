@@ -1,5 +1,7 @@
 package com.example.frankjunior.taidoido.connection;
 
+import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
@@ -17,7 +19,6 @@ import java.util.List;
  */
 public class CategoriesRequest {
 
-    private static final String CATEGORY_LIST_API = "/api/get_category_index/";
     private static final String KEY_CATEGORIES = "categories";
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
@@ -34,7 +35,7 @@ public class CategoriesRequest {
      */
     public List<Category> loadCategoryList() {
         try {
-            String categoryListJson = mBlogURL + CATEGORY_LIST_API;
+            String categoryListJson = App.getContext().getString(R.string.get_categories_list_api, mBlogURL);
             String json = Util.doGetRequest(categoryListJson);
             return readJsonCategoryList(json);
         } catch (Exception e) {

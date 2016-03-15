@@ -84,8 +84,10 @@ public class Util {
         String newHtml = html;
         newHtml = findYoutubeTag(newHtml);
         try {
-            String template = streamToString(ctx.getAssets().open(TEMPLATE_HTML));
+            InputStream inputStream = ctx.getAssets().open(TEMPLATE_HTML);
+            String template = streamToString(inputStream);
             newHtml = template.replaceAll(CONTENT, newHtml);
+            inputStream.close();
         } catch (IOException e) {
             MyLog.printError("error", e);
         }

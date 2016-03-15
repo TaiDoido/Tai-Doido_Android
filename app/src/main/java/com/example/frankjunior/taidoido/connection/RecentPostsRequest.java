@@ -1,5 +1,7 @@
 package com.example.frankjunior.taidoido.connection;
 
+import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
@@ -29,7 +31,6 @@ public class RecentPostsRequest {
     private static final String KEY_TOTAL_PAGES = "pages";
     private static final String KEY_URL = "url";
     private static final String KEY_CONTENT = "content";
-    private static final String RECENT_POSTS_PAGINATION_API = "/api/get_recent_posts/?page=";
     private static int pageNumber = 1;
     private static int mTotalPages = 0;
     private static String mBlogURL = null;
@@ -74,7 +75,7 @@ public class RecentPostsRequest {
      */
     public List<Post> loadRecentPosts() {
         try {
-            String recentPostsJson = mBlogURL + RECENT_POSTS_PAGINATION_API + pageNumber;
+            String recentPostsJson = App.getContext().getString(R.string.get_recent_posts_api, mBlogURL, pageNumber);
             String json = Util.doGetRequest(recentPostsJson);
             return readJsonRecentPosts(json);
         } catch (Exception e) {

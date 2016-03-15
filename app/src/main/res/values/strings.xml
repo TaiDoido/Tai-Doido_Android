@@ -2,6 +2,10 @@
     <string name="app_name">Tai Doido</string>
     <string name="tai_doido_url">http://frankjunior.com.br/blog</string>
 
+    <!-- URLS da API JSON -->
+    <string name="get_recent_posts_api">%1$s/api/get_recent_posts/?page=%2$d</string>
+    <string name="get_categories_list_api">%1$s/api/get_category_index/</string>
+
     <string name="progress_msg">Baixando informações</string>
     <string name="refresh">ATUALIZAR</string>
 
