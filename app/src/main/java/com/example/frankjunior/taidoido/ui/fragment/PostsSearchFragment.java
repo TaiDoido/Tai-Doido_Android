@@ -3,10 +3,10 @@ package com.example.frankjunior.taidoido.ui.fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,9 +33,11 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class RecentPostsListFragment extends BaseFragment implements
+public class PostsSearchFragment extends Fragment implements
         RecentPostListAdapter.OnClickPostListener,
         BaseFragment.ConnectionListener {
+
+    private static final String EXTRA_QUERY = "extra_query";
 
     private static final String ARG_ID = "id_argument";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
@@ -44,7 +46,7 @@ public class RecentPostsListFragment extends BaseFragment implements
     private final int INVSISIBLE = 2;
     private final int WITHOUT_CONNECTION = 3;
     private final int FIRST_PAGE = 1;
-    private PostTask mTask;
+    private SearchTask mTask;
     private RecentPostListAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private TextView mTextMensagem;
@@ -56,28 +58,34 @@ public class RecentPostsListFragment extends BaseFragment implements
     private RequestController mRequestController;
     private LinearLayout mRootPostsList;
     private boolean isPaused = false;
+    private String mQuery;
 
-    public static RecentPostsListFragment newInstance(long id) {
+
+    public PostsSearchFragment() {
+        // Required empty public constructor
+    }
+
+    public static PostsSearchFragment newInstance(String query) {
+        PostsSearchFragment fragment = new PostsSearchFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_ID, id);
-        RecentPostsListFragment f = new RecentPostsListFragment();
-        f.setArguments(args);
-        return f;
+        args.putString(EXTRA_QUERY, query);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         mRequestController = new RequestController();
-        setConnectionListener(this);
+        if (getArguments() != null) {
+            mQuery = getArguments().getString(EXTRA_QUERY);
+        }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recent_posts_list, container, false);
-        mCallbacks.setToolbar(view);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_posts_search, container, false);
         mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mTextMensagem = (TextView) view.findViewById(android.R.id.empty);
@@ -108,14 +116,13 @@ public class RecentPostsListFragment extends BaseFragment implements
         PaginationHandle();
 
         mAdapter = new RecentPostListAdapter(getActivity(), mPostList);
-        mAdapter.addOnClickPostListener(RecentPostsListFragment.this);
+        mAdapter.addOnClickPostListener(PostsSearchFragment.this);
         mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
 
         // aqui são as validações pra disparar a task
         showProgress(LOADING);
         resetRequest();
         dispararTask();
-
         return view;
     }
 
@@ -157,8 +164,7 @@ public class RecentPostsListFragment extends BaseFragment implements
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1);
         ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
     }
-
-    /*
+     /*
       **********************************************
       *   Métodos private
       **********************************************
@@ -257,8 +263,8 @@ public class RecentPostsListFragment extends BaseFragment implements
 
     private void startDownload() {
         if (mTask == null || mTask.getStatus() != AsyncTask.Status.RUNNING) {
-            mTask = new PostTask();
-            mTask.execute();
+            mTask = new SearchTask();
+            mTask.execute(mQuery);
         }
     }
 
@@ -289,7 +295,7 @@ public class RecentPostsListFragment extends BaseFragment implements
     /**
      * AsyncTask pra pegar os Recent Posts
      */
-    class PostTask extends AsyncTask<Void, Void, List<Post>> {
+    class SearchTask extends AsyncTask<String, Void, List<Post>> {
 
         @Override
         protected void onPreExecute() {
@@ -297,8 +303,9 @@ public class RecentPostsListFragment extends BaseFragment implements
         }
 
         @Override
-        protected List<Post> doInBackground(Void... strings) {
-            return mRequestController.loadPosts(null);
+        protected List<Post> doInBackground(String... params) {
+            String query = params[0];
+            return mRequestController.loadPosts(query);
         }
 
         @Override

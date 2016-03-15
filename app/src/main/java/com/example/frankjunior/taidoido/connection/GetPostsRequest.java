@@ -17,7 +17,7 @@ import java.util.List;
  * Created by frankjunior on 14/01/16.
  * * Classe responsável por administrar a request de pegar os RecentPosts da API
  */
-public class RecentPostsRequest {
+public class GetPostsRequest {
 
     // ===================================================================
     // Constants: JSON objects tags - Recent Posts
@@ -37,7 +37,7 @@ public class RecentPostsRequest {
     // ===================================================================
     private final int FIRST_PAGE = 1;
 
-    public RecentPostsRequest(String blogUrl) {
+    public GetPostsRequest(String blogUrl) {
         mBlogURL = blogUrl;
     }
 
@@ -59,7 +59,7 @@ public class RecentPostsRequest {
         if (pageNumber <= 0) {
             pageNumber = 1;
         }
-        RecentPostsRequest.pageNumber = pageNumber;
+        GetPostsRequest.pageNumber = pageNumber;
     }
 
     /*
@@ -73,9 +73,14 @@ public class RecentPostsRequest {
      *
      * @return - Lista de posts preenchida
      */
-    public List<Post> loadRecentPosts() {
+    public List<Post> loadPosts(String query) {
+        String recentPostsJson = null;
         try {
-            String recentPostsJson = App.getContext().getString(R.string.get_recent_posts_api, mBlogURL, pageNumber);
+            if (query == null) {
+                recentPostsJson = App.getContext().getString(R.string.get_recent_posts_api, mBlogURL, pageNumber);
+            } else {
+                recentPostsJson = App.getContext().getString(R.string.get_search_post_api, mBlogURL, query, pageNumber);
+            }
             String json = Util.doGetRequest(recentPostsJson);
             return readJsonRecentPosts(json);
         } catch (Exception e) {

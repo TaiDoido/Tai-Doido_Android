@@ -1,5 +1,8 @@
 package com.example.frankjunior.taidoido.ui;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +29,7 @@ import com.example.frankjunior.taidoido.util.MyLog;
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final String EXTRA_PROGRAM_ID = MainActivity.class.getPackage().getName() + ".extra.PROGRAM_ID";
+    private static final int DURATION = 10000;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private DrawerLayout mDrawerLayout;
 
@@ -110,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private void setupAnimations() {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         ChangeBounds changeBounds = new ChangeBounds();
-        changeBounds.setDuration(10000);
+        changeBounds.setDuration(DURATION);
         getWindow().setExitTransition(changeBounds);
         getWindow().setEnterTransition(changeBounds);
     }
@@ -121,16 +125,18 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * @param menu
      */
     private void actionSearchButton(Menu menu) {
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final MenuItem searchItem = menu.findItem(R.id.menu_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(getString(R.string.menu_search_hint));
+        ComponentName searchableInfo = new ComponentName(this, PostsSearchActivity.class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(searchableInfo));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 MenuItemCompat.collapseActionView(searchItem);
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;

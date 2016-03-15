@@ -17,14 +17,14 @@ import java.util.List;
  * Created by frankjunior on 02/03/16.
  * Classe responsável por administrar a request de pegar a lista de categorias da API
  */
-public class CategoriesRequest {
+public class GetCategoriesRequest {
 
     private static final String KEY_CATEGORIES = "categories";
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
     private static String mBlogURL = null;
 
-    public CategoriesRequest(String blogUrl) {
+    public GetCategoriesRequest(String blogUrl) {
         mBlogURL = blogUrl;
     }
 

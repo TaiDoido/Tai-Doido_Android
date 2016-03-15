@@ -3,14 +3,9 @@ package com.example.frankjunior.taidoido.ui;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -25,7 +20,7 @@ import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.fragment.PostDetailFragment;
 import com.squareup.picasso.Picasso;
 
-public class PostDetailActivity extends AppCompatActivity {
+public class PostDetailActivity extends BaseActivity {
 
     public static final String EXTRA_POST = "extra_object";
     private static final int MENU_HOME = android.R.id.home;
@@ -103,22 +98,6 @@ public class PostDetailActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    /***
-     * Change the given fragment on current Activity
-     *
-     * @param fragment
-     */
-    private void changeFragment(@NonNull Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if (fragmentManager.findFragmentByTag(fragment.getClass().toString()) != null) {
-            fragmentTransaction.add(R.id.place_holder, fragment, fragment.getClass().toString());
-        } else {
-            fragmentTransaction.replace(R.id.place_holder, fragment, fragment.getClass().toString());
-        }
-        fragmentTransaction.commitAllowingStateLoss();
     }
 
     /**

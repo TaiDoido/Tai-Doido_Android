@@ -2,8 +2,8 @@ package com.example.frankjunior.taidoido.controller;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.app.App;
-import com.example.frankjunior.taidoido.connection.CategoriesRequest;
-import com.example.frankjunior.taidoido.connection.RecentPostsRequest;
+import com.example.frankjunior.taidoido.connection.GetCategoriesRequest;
+import com.example.frankjunior.taidoido.connection.GetPostsRequest;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.Post;
 
@@ -17,12 +17,12 @@ public class RequestController {
 
     private static final String BLOG_URL = App.getContext().getString(R.string.tai_doido_url);
 
-    private CategoriesRequest mCategoriesRequest;
-    private RecentPostsRequest mRecentPostsRequest;
+    private GetCategoriesRequest mGetCategoriesRequest;
+    private GetPostsRequest mGetPostsRequest;
 
     public RequestController() {
-        mCategoriesRequest = new CategoriesRequest(BLOG_URL);
-        mRecentPostsRequest = new RecentPostsRequest(BLOG_URL);
+        mGetCategoriesRequest = new GetCategoriesRequest(BLOG_URL);
+        mGetPostsRequest = new GetPostsRequest(BLOG_URL);
     }
 
     /**
@@ -30,8 +30,8 @@ public class RequestController {
      *
      * @return - lista de Posts
      */
-    public List<Post> loadRecentPosts() {
-        return mRecentPostsRequest.loadRecentPosts();
+    public List<Post> loadPosts(String query) {
+        return mGetPostsRequest.loadPosts(query);
     }
 
     /**
@@ -40,6 +40,6 @@ public class RequestController {
      * @return - Lista de Categorias
      */
     public List<Category> loadCategoryList() {
-        return mCategoriesRequest.loadCategoryList();
+        return mGetCategoriesRequest.loadCategoryList();
     }
 }

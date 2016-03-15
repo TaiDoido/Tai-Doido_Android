@@ -5,9 +5,11 @@
     <!-- URLS da API JSON -->
     <string name="get_recent_posts_api">%1$s/api/get_recent_posts/?page=%2$d</string>
     <string name="get_categories_list_api">%1$s/api/get_category_index/</string>
+    <string name="get_search_post_api">%1$s/api/get_search_results/?search=%2$s&amp;page=%3$d</string>
 
     <string name="progress_msg">Baixando informações</string>
     <string name="refresh">ATUALIZAR</string>
+    <string name="search_hint">Buscar</string>
 
     <string name="post_image_transition_name">featured_image</string>
 
@@ -32,4 +34,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_favorite">Favoritos</string>
     <string name="share_intent_type">text/plain</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

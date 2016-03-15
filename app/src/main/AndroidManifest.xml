@@ -19,7 +19,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.PostDetailActivity"></activity>
+        <activity android:name=".ui.PostDetailActivity" />
+        <activity
+            android:name=".ui.PostsSearchActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/search_posts" />
+        </activity>
+        <activity android:name=".ui.BaseActivity"></activity>
     </application>
 
 </manifest>
