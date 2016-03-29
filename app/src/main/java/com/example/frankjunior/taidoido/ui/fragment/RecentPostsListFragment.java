@@ -24,7 +24,7 @@ import com.example.frankjunior.taidoido.connection.GetPostsRequest;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.PostDetailActivity;
-import com.example.frankjunior.taidoido.ui.RecentPostListAdapter;
+import com.example.frankjunior.taidoido.ui.adapter.RecentPostListAdapter;
 import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;

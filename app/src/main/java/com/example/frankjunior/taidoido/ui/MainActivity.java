@@ -6,13 +6,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -51,14 +51,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(ListView mDrawerListView, int position) {
+    public void onNavigationDrawerItemSelected(ListView drawerListView, int position) {
         Fragment fragment = null;
         // se a ListView do NavigationDrawer não foi carregada ainda, carregue a tela padrão: RecentPostListFragment
-        if (mDrawerListView == null) {
+        // ou seja, essa é a tela padrão, que abre assim que o app for aberto.
+        if (drawerListView == null) {
             fragment = RecentPostsListFragment.newInstance();
             // se não... carregue a tela do item clicado
         } else {
-            DrawerListItem selectedDrawerListItem = (DrawerListItem) mDrawerListView.getItemAtPosition(position);
+            DrawerListItem selectedDrawerListItem = (DrawerListItem) drawerListView.getItemAtPosition(position);
             if (selectedDrawerListItem.textTitle != null) {
                 fragment = getFragmentScreen(selectedDrawerListItem.textTitle);
             }
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawers();
         } else {
             super.onBackPressed();
@@ -80,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      *   Métodos private
      **********************************************
      */
-
     /**
      * Método usado em forma de callback, pelo @BaseFragment
      * que por sua vez cada fragment do NavigationDrawer deve extender.

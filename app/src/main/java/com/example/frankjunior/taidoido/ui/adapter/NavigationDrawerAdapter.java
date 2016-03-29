@@ -1,4 +1,4 @@
-package com.example.frankjunior.taidoido.ui;
+package com.example.frankjunior.taidoido.ui.adapter;
 
 import android.content.Context;
 import android.util.TypedValue;
