@@ -22,8 +22,8 @@ public class RequestController {
     private int mPageNumber;
 
     public RequestController() {
-        mGetCategoriesRequest = new GetCategoriesRequest(BLOG_URL);
-        mGetPostsRequest = new GetPostsRequest(BLOG_URL);
+        mGetCategoriesRequest = new GetCategoriesRequest();
+        mGetPostsRequest = new GetPostsRequest();
     }
 
     /**

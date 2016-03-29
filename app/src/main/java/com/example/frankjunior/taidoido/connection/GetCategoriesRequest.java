@@ -20,11 +20,6 @@ public class GetCategoriesRequest {
     private static final String KEY_CATEGORIES = "categories";
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
-    private static String mBlogURL = null;
-
-    public GetCategoriesRequest(String blogUrl) {
-        mBlogURL = blogUrl;
-    }
 
     /**
      * Método principal para pegar os RecentPosts

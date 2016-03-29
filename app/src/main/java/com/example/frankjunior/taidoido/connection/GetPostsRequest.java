@@ -29,15 +29,10 @@ public class GetPostsRequest {
     private static final String KEY_TOTAL_PAGES = "pages";
     private static final String KEY_URL = "url";
     private static final String KEY_CONTENT = "content";
-    private static String mBlogURL = null;
     // ===================================================================
     private final int FIRST_PAGE = 1;
-    private int pageNumber = 1;
+    private int pageNumber = FIRST_PAGE;
     private int mTotalPages = 0;
-
-    public GetPostsRequest(String blogUrl) {
-        mBlogURL = blogUrl;
-    }
 
     /**
      * Método para pegar o numero total de paginas, para controle da paginação
