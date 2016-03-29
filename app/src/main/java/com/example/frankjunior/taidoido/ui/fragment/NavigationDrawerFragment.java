@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -33,7 +32,7 @@ import java.util.List;
 /**
  * Created by frankjunior on 25/02/16.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends BaseFragment implements BaseFragment.ConnectionListener {
 
     public static final int RECENT_POSTS_ITEM = 0;
     /**
@@ -97,6 +96,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setConnectionListener(this);
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -122,7 +122,7 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
         mNavigationDrawerMenuItens = fillItensList(null);
-        mNavigationDrawerAdapter = new NavigationDrawerAdapter(App.getContext(), mNavigationDrawerMenuItens);
+        mNavigationDrawerAdapter = new NavigationDrawerAdapter(getActivity(), mNavigationDrawerMenuItens);
         mDrawerListView.setAdapter(mNavigationDrawerAdapter);
 
         setItemChecked(mCurrentSelectedPosition);
@@ -263,7 +263,8 @@ public class NavigationDrawerFragment extends Fragment {
             menuItemList.add(new DrawerListItem()); // separador
         }
         // depois de adicionar o conteúdo do categoryItems, adiciona os ultimos itens estáticos.
-        menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_SETTINGS, SETTINGS));
+        // TODO: Por enquanto, o item de "SETTINGS" estará comentado. Talvez ele só apareça na versão 2
+//        menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_SETTINGS, SETTINGS));
         menuItemList.add(new DrawerListItem(CLICKABLE_OFF, ICON_ABOUT, ABOUT));
 
         return menuItemList;
@@ -300,10 +301,17 @@ public class NavigationDrawerFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onConnectionChanged(boolean hasConnection) {
+        if (hasConnection) {
+            dispararTask();
+        }
+    }
+
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          */

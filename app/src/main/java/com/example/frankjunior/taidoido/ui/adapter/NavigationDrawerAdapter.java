@@ -45,14 +45,14 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
         switch (viewType) {
             case VIEW_TYPE_SEPARATOR:
                 if (convertView == null) {
-                    convertView = mInflater.inflate(R.layout.list_item_separator_navigation_drawer, parent, false);
+                    convertView = mInflater.inflate(R.layout.item_separator_navigation_drawer, parent, false);
                 }
                 break;
             case VIEW_TYPE_SELECTABLE:
             case VIEW_TYPE_UNSELECTABLE:
                 ViewHolder holder;
                 if (convertView == null) {
-                    convertView = mInflater.inflate(R.layout.list_item_navigation_drawer, parent, false);
+                    convertView = mInflater.inflate(R.layout.item_navigation_drawer, parent, false);
                     holder = new ViewHolder(convertView);
                     convertView.setTag(holder);
                 } else {
@@ -69,7 +69,7 @@ public class NavigationDrawerAdapter extends ArrayAdapter<DrawerListItem> {
                 break;
             case VIEW_TYPE_LABEL:
                 if (convertView == null) {
-                    convertView = mInflater.inflate(R.layout.list_item_label_navigation_drawer, parent, false);
+                    convertView = mInflater.inflate(R.layout.item_label_navigation_drawer, parent, false);
                     holder = new ViewHolder(convertView);
                     convertView.setTag(holder);
                 } else {

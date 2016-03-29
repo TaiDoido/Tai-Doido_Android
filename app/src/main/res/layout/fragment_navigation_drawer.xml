@@ -6,45 +6,52 @@
     android:orientation="vertical"
     tools:context=".ui.fragment.NavigationDrawerFragment">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:background="@color/colorPrimary"
-        android:clickable="true"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/navigation_drawer_header_padding_bottom">
+    <!--
+    *************** NOTA *******************
+    Esse FrameLayout é o header.
+    Tirei ele, mas deixei comentado caso eu me arrependa
+     -->
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin">
 
-            <ImageView
-                android:id="@+id/profile_picture"
-                android:layout_width="@dimen/navigation_drawer_header_image_size"
-                android:layout_height="@dimen/navigation_drawer_header_image_size"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher"
-                android:visibility="visible" />
+    <!--<FrameLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="@dimen/activity_vertical_margin"-->
+    <!--android:background="@color/colorPrimary"-->
+    <!--android:clickable="true"-->
+    <!--android:orientation="vertical"-->
+    <!--android:paddingBottom="@dimen/navigation_drawer_header_padding_bottom">-->
 
-            <TextView
-                android:id="@+id/user_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/profile_picture"
-                android:layout_centerHorizontal="true"
-                android:layout_marginEnd="8dp"
-                android:text="@string/app_name"
-                android:textAppearance="?android:attr/textAppearance" />
-        </RelativeLayout>
-    </FrameLayout>
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:gravity="center_vertical"-->
+    <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
+    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingTop="@dimen/activity_vertical_margin">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/profile_picture"-->
+    <!--android:layout_width="@dimen/navigation_drawer_header_image_size"-->
+    <!--android:layout_height="@dimen/navigation_drawer_header_image_size"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:scaleType="centerCrop"-->
+    <!--android:src="@mipmap/ic_launcher"-->
+    <!--android:visibility="visible" />-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/user_email"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/profile_picture"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:text="@string/app_name"-->
+    <!--android:textAppearance="?android:attr/textAppearance" />-->
+    <!--</RelativeLayout>-->
+    <!--</FrameLayout>-->
 
     <ListView
         android:id="@+id/option_list"

@@ -8,6 +8,7 @@
         <item name="android:windowBackground">@color/theme_background</item>
         <item name="colorAccent">@color/colorPrimary</item>
 
+        <!-- Usado para as animações de transição de tela, no PostDetailFragment -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowSharedElementEnterTransition">
             @android:transition/move
