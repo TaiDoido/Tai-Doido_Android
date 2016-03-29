@@ -83,7 +83,7 @@ public class PostsListFragment extends BaseFragment implements
             mCategoryId = arguments.getString(KEY_CATEGORY_ID);
         }
 
-        View view = inflater.inflate(R.layout.fragment_recent_posts_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
         mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mTextMensagem = (TextView) view.findViewById(android.R.id.empty);

@@ -37,7 +37,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         View view;
         switch (viewType) {
             case VIEW_ITEM:
-                view = LayoutInflater.from(mContext).inflate(R.layout.item_recent_post_list, parent, false);
+                view = LayoutInflater.from(mContext).inflate(R.layout.item_post_list, parent, false);
                 holder = new PostViewHolder(view);
                 view.setTag(holder);
                 view.setOnClickListener(new View.OnClickListener() {
