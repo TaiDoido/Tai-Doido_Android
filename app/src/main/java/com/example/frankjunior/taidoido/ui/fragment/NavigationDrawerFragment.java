@@ -36,10 +36,6 @@ import java.util.List;
 public class NavigationDrawerFragment extends Fragment {
 
     public static final int RECENT_POSTS_ITEM = 0;
-    public static final int FAVORITES_ITEM = 1;
-    public static final int SEPARATOR_ITEM = 2;
-    public static final int SETTINGS_ITEM = 3;
-    public static final int ABOUT_ITEM = 4;
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
@@ -57,10 +53,10 @@ public class NavigationDrawerFragment extends Fragment {
     private static final int ICON_CATEGORY = R.drawable.ic_action_label;
     private static final int ICON_SETTINGS = R.drawable.ic_action_settings;
     private static final int ICON_ABOUT = R.drawable.ic_action_info;
-    private static String RECENT_POSTS = App.getContext().getString(R.string.navigation_drawer_recent_posts);
-    private static String FAVORITES = App.getContext().getString(R.string.navigation_drawer_favorites);
-    private static String SETTINGS = App.getContext().getString(R.string.navigation_drawer_settings);
-    private static String ABOUT = App.getContext().getString(R.string.navigation_drawer_about);
+    public static String RECENT_POSTS = App.getContext().getString(R.string.navigation_drawer_recent_posts);
+    public static String FAVORITES = App.getContext().getString(R.string.navigation_drawer_favorites);
+    public static String SETTINGS = App.getContext().getString(R.string.navigation_drawer_settings);
+    public static String ABOUT = App.getContext().getString(R.string.navigation_drawer_about);
     private static String LABEL_CATEGORY = App.getContext().getString(R.string.navigation_drawer_category_label);
 
     /**
@@ -293,7 +289,7 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onNavigationDrawerItemSelected(mDrawerListView, position);
         }
     }
 
@@ -311,7 +307,7 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(ListView mDrawerListView, int position);
     }
 
     /**

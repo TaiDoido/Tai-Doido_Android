@@ -15,10 +15,11 @@ import android.transition.ChangeBounds;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
+import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.model.DrawerListItem;
 import com.example.frankjunior.taidoido.ui.fragment.NavigationDrawerFragment;
 import com.example.frankjunior.taidoido.ui.fragment.RecentPostsListFragment;
 import com.example.frankjunior.taidoido.util.MyLog;
@@ -28,9 +29,7 @@ import com.example.frankjunior.taidoido.util.MyLog;
  */
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    public static final String EXTRA_PROGRAM_ID = MainActivity.class.getPackage().getName() + ".extra.PROGRAM_ID";
     private static final int DURATION = 10000;
-    private NavigationDrawerFragment mNavigationDrawerFragment;
     private DrawerLayout mDrawerLayout;
 
     @Override
@@ -38,9 +37,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         setupAnimations();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        customizeToolbar();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp();
+        NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        navigationDrawerFragment.setUp();
     }
 
     @Override
@@ -51,33 +51,19 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        MyLog.print("click position = " + position);
-        Bundle params = getIntent().getExtras();
+    public void onNavigationDrawerItemSelected(ListView mDrawerListView, int position) {
         Fragment fragment = null;
-        switch (position) {
-            case NavigationDrawerFragment.RECENT_POSTS_ITEM:
-                if (params != null && params.containsKey(EXTRA_PROGRAM_ID)) {
-                    fragment = RecentPostsListFragment.newInstance(params.getLong(EXTRA_PROGRAM_ID));
-                } else {
-                    fragment = new RecentPostsListFragment();
-                }
-                break;
-            case NavigationDrawerFragment.FAVORITES_ITEM:
-
-                break;
-            case NavigationDrawerFragment.SETTINGS_ITEM:
-
-                break;
-            case NavigationDrawerFragment.ABOUT_ITEM:
-
-                break;
+        // se a ListView do NavigationDrawer não foi carregada ainda, carregue a tela padrão: RecentPostListFragment
+        if (mDrawerListView == null) {
+            fragment = RecentPostsListFragment.newInstance();
+            // se não... carregue a tela do item clicado
+        } else {
+            DrawerListItem selectedDrawerListItem = (DrawerListItem) mDrawerListView.getItemAtPosition(position);
+            if (selectedDrawerListItem.textTitle != null) {
+                fragment = getFragmentScreen(selectedDrawerListItem.textTitle);
+            }
         }
-        if (fragment != null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
-                    .replace(R.id.fragment_container, fragment).commit();
-        }
+        changeScreen(fragment);
     }
 
     @Override
@@ -89,28 +75,63 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
     }
 
-    /**
-     * Método usado em forma de callback, pelo @BaseFragment
-     * que por sua vez cada fragment do NavigationDrawer deve extender.
-     * Sendo assim, a Toolbar é configurada pra cada fragment através desse método
-     *
-     * @param view View inflada no Fragment
-     */
-    public void setToolbar(View view) {
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
-        setSupportActionBar(toolbar);
-        //noinspection ConstantConditions
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        mNavigationDrawerFragment.setUp();
-    }
-
     /*
      **********************************************
      *   Métodos private
      **********************************************
      */
+
+    /**
+     * Método usado em forma de callback, pelo @BaseFragment
+     * que por sua vez cada fragment do NavigationDrawer deve extender.
+     * Sendo assim, a Toolbar é configurada pra cada fragment através desse método
+     */
+    private void customizeToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    /**
+     * Método usado para selecionar o fragment correspondente ao clique do item
+     * do NavigationDrawer
+     * @param selectedItem nome do item selecionado
+     * @return Fragment preenchido, ou null caso dê errado
+     */
+    private Fragment getFragmentScreen(String selectedItem) {
+        Fragment fragment = null;
+        if (selectedItem.equals(NavigationDrawerFragment.RECENT_POSTS)) {
+            fragment = RecentPostsListFragment.newInstance();
+        } else if (selectedItem.equals(NavigationDrawerFragment.FAVORITES)) {
+            MyLog.print("cliquei em Favorites");
+        } else if (selectedItem.equals(NavigationDrawerFragment.SETTINGS)) {
+            MyLog.print("cliquei em Settings");
+        } else if (selectedItem.equals(NavigationDrawerFragment.ABOUT)) {
+            MyLog.print("cliquei em About");
+        } else {
+            MyLog.print("cliquei na categoria: " + selectedItem);
+        }
+        return fragment;
+    }
+
+    /**
+     * Método usado pra trocar o fragment na tela.
+     * @param fragment preenchido, pronto pra ser exibido na tela.
+     */
+    private void changeScreen(Fragment fragment) {
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(
+                            R.anim.abc_fade_in,
+                            R.anim.abc_fade_out,
+                            R.anim.abc_fade_in,
+                            R.anim.abc_fade_out)
+                    .replace(R.id.fragment_container, fragment).commit();
+        }
+    }
+
     private void setupAnimations() {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         ChangeBounds changeBounds = new ChangeBounds();
@@ -137,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 MenuItemCompat.collapseActionView(searchItem);
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;

@@ -37,7 +37,6 @@ public class RecentPostsListFragment extends BaseFragment implements
         RecentPostListAdapter.OnClickPostListener,
         BaseFragment.ConnectionListener {
 
-    private static final String ARG_ID = "id_argument";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
     private final int LOADING = 0;
     private final int ERROR = 1;
@@ -57,12 +56,9 @@ public class RecentPostsListFragment extends BaseFragment implements
     private LinearLayout mRootPostsList;
     private boolean isPaused = false;
 
-    public static RecentPostsListFragment newInstance(long id) {
-        Bundle args = new Bundle();
-        args.putLong(ARG_ID, id);
-        RecentPostsListFragment f = new RecentPostsListFragment();
-        f.setArguments(args);
-        return f;
+    public static RecentPostsListFragment newInstance() {
+        RecentPostsListFragment fragment = new RecentPostsListFragment();
+        return fragment;
     }
 
     @Override
@@ -76,7 +72,6 @@ public class RecentPostsListFragment extends BaseFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recent_posts_list, container, false);
-        mCallbacks.setToolbar(view);
 
         mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
