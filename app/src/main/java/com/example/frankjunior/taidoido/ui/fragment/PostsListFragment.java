@@ -20,11 +20,10 @@ import android.widget.TextView;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.app.App;
-import com.example.frankjunior.taidoido.connection.GetPostsRequest;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.PostDetailActivity;
-import com.example.frankjunior.taidoido.ui.adapter.RecentPostListAdapter;
+import com.example.frankjunior.taidoido.ui.adapter.PostListAdapter;
 import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;
@@ -33,10 +32,12 @@ import java.util.List;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
-public class RecentPostsListFragment extends BaseFragment implements
-        RecentPostListAdapter.OnClickPostListener,
+public class PostsListFragment extends BaseFragment implements
+        PostListAdapter.OnClickPostListener,
         BaseFragment.ConnectionListener {
 
+    private static final String KEY_CATEGORY_ID = "category_id";
+    private static final String KEY_CATEGORY_TITLE = "category_title";
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
     private final int LOADING = 0;
     private final int ERROR = 1;
@@ -44,7 +45,7 @@ public class RecentPostsListFragment extends BaseFragment implements
     private final int WITHOUT_CONNECTION = 3;
     private final int FIRST_PAGE = 1;
     private PostTask mTask;
-    private RecentPostListAdapter mAdapter;
+    private PostListAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private TextView mTextMensagem;
     private ProgressBar mProgressBar;
@@ -55,9 +56,15 @@ public class RecentPostsListFragment extends BaseFragment implements
     private RequestController mRequestController;
     private LinearLayout mRootPostsList;
     private boolean isPaused = false;
+    private String mCategoryId;
 
-    public static RecentPostsListFragment newInstance() {
-        RecentPostsListFragment fragment = new RecentPostsListFragment();
+    public static PostsListFragment newInstance(String categoryId) {
+        PostsListFragment fragment = new PostsListFragment();
+        if (categoryId != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString(KEY_CATEGORY_ID, categoryId);
+            fragment.setArguments(bundle);
+        }
         return fragment;
     }
 
@@ -71,8 +78,12 @@ public class RecentPostsListFragment extends BaseFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recent_posts_list, container, false);
+        if (getArguments() != null) {
+            Bundle arguments = getArguments();
+            mCategoryId = arguments.getString(KEY_CATEGORY_ID);
+        }
 
+        View view = inflater.inflate(R.layout.fragment_recent_posts_list, container, false);
         mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mTextMensagem = (TextView) view.findViewById(android.R.id.empty);
@@ -102,8 +113,8 @@ public class RecentPostsListFragment extends BaseFragment implements
         mRecyclerView.setLayoutManager(layoutManager);
         PaginationHandle();
 
-        mAdapter = new RecentPostListAdapter(getActivity(), mPostList);
-        mAdapter.addOnClickPostListener(RecentPostsListFragment.this);
+        mAdapter = new PostListAdapter(getActivity(), mPostList);
+        mAdapter.addOnClickPostListener(PostsListFragment.this);
         mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
 
         // aqui são as validações pra disparar a task
@@ -182,7 +193,7 @@ public class RecentPostsListFragment extends BaseFragment implements
 
                 private boolean canScrollerLastItens() {
                     // Se chegou na ultima pagina, retorne false
-                    if (mRecentPostsCurrentPage < GetPostsRequest.getTotalPages()) {
+                    if (mRecentPostsCurrentPage < mRequestController.getTotalPages()) {
                         return (totalVisibleItem + firstVisiblesItem) >= totalItemCount;
                     } else {
                         return false;
@@ -191,7 +202,7 @@ public class RecentPostsListFragment extends BaseFragment implements
 
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
-                    GetPostsRequest.setPageNumber(mRecentPostsCurrentPage);
+                    mRequestController.setPageNumber(mRecentPostsCurrentPage);
                     isPagination = true;
                     dispararTask();
                     mLoading = true;
@@ -223,7 +234,7 @@ public class RecentPostsListFragment extends BaseFragment implements
         isPagination = false;
         mPostList.clear();
         mRecentPostsCurrentPage = FIRST_PAGE;
-        GetPostsRequest.setPageNumber(FIRST_PAGE);
+        mRequestController.setPageNumber(FIRST_PAGE);
     }
 
     private void addPaginationLoading() {
@@ -292,8 +303,14 @@ public class RecentPostsListFragment extends BaseFragment implements
         }
 
         @Override
-        protected List<Post> doInBackground(Void... strings) {
-            return mRequestController.loadPosts(null);
+        protected List<Post> doInBackground(Void... param) {
+            List<Post> posts;
+            if (mCategoryId == null) {
+                posts = mRequestController.loadRecentPosts();
+            } else {
+                posts = mRequestController.loadCategoryPosts(mCategoryId);
+            }
+            return posts;
         }
 
         @Override

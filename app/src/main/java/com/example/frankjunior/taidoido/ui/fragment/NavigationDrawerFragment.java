@@ -308,6 +308,7 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(ListView mDrawerListView, int position);
+        void onGetCategoriesList(List<Category> categories);
     }
 
     /**
@@ -330,6 +331,9 @@ public class NavigationDrawerFragment extends Fragment {
             super.onPostExecute(posts);
             List<DrawerListItem> menuItemList = new ArrayList<DrawerListItem>();
             if (posts != null) {
+                if (mCallbacks != null) {
+                    mCallbacks.onGetCategoriesList(posts);
+                }
                 for (int i = 0; i < posts.size(); i++) {
                     menuItemList.add(new DrawerListItem(CLICKABLE_ON, ICON_CATEGORY, posts.get(i).getTitle()));
                 }

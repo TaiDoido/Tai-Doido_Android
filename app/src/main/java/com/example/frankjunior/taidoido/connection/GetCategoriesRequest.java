@@ -1,7 +1,5 @@
 package com.example.frankjunior.taidoido.connection;
 
-import com.example.frankjunior.taidoido.R;
-import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
@@ -33,9 +31,8 @@ public class GetCategoriesRequest {
      *
      * @return - Lista de posts preenchida
      */
-    public List<Category> loadCategoryList() {
+    public List<Category> loadCategoryList(String categoryListJson) {
         try {
-            String categoryListJson = App.getContext().getString(R.string.get_categories_list_api, mBlogURL);
             String json = Util.doGetRequest(categoryListJson);
             return readJsonCategoryList(json);
         } catch (Exception e) {

@@ -1,7 +1,5 @@
 package com.example.frankjunior.taidoido.connection;
 
-import com.example.frankjunior.taidoido.R;
-import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
@@ -31,11 +29,11 @@ public class GetPostsRequest {
     private static final String KEY_TOTAL_PAGES = "pages";
     private static final String KEY_URL = "url";
     private static final String KEY_CONTENT = "content";
-    private static int pageNumber = 1;
-    private static int mTotalPages = 0;
     private static String mBlogURL = null;
     // ===================================================================
     private final int FIRST_PAGE = 1;
+    private int pageNumber = 1;
+    private int mTotalPages = 0;
 
     public GetPostsRequest(String blogUrl) {
         mBlogURL = blogUrl;
@@ -46,20 +44,8 @@ public class GetPostsRequest {
      *
      * @return
      */
-    public static int getTotalPages() {
+    public int getTotalPages() {
         return mTotalPages;
-    }
-
-    /**
-     * Método para setar o numero da pagina, da paginação do RecentPosts
-     *
-     * @param pageNumber - numero da pagina
-     */
-    public static void setPageNumber(int pageNumber) {
-        if (pageNumber <= 0) {
-            pageNumber = 1;
-        }
-        GetPostsRequest.pageNumber = pageNumber;
     }
 
     /*
@@ -74,14 +60,8 @@ public class GetPostsRequest {
      * @return - Lista de posts preenchida
      */
     public List<Post> loadPosts(String query) {
-        String recentPostsJson = null;
         try {
-            if (query == null) {
-                recentPostsJson = App.getContext().getString(R.string.get_recent_posts_api, mBlogURL, pageNumber);
-            } else {
-                recentPostsJson = App.getContext().getString(R.string.get_search_post_api, mBlogURL, query, pageNumber);
-            }
-            String json = Util.doGetRequest(recentPostsJson);
+            String json = Util.doGetRequest(query);
             return readJsonRecentPosts(json);
         } catch (Exception e) {
             MyLog.printError("Erro em fazer o donwload dos Recent Posts", e);
@@ -100,8 +80,8 @@ public class GetPostsRequest {
         List<Post> listaDePosts = new ArrayList<Post>();
         JSONObject jsonObject = new JSONObject(json);
 
-        // se a for a primeira requisição, pegue o numero total de paginas.
-        // Esse if é necessário, pra não pegar esse campo a cada request
+        // se a for a primeira pagina, pegue o numero total de paginas.
+        // Esse if é necessário, pra não pegar esse campo a cada pagination
         if (pageNumber == FIRST_PAGE) {
             mTotalPages = jsonObject.getInt(KEY_TOTAL_PAGES);
         }

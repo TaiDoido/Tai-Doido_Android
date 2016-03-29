@@ -20,11 +20,10 @@ import android.widget.TextView;
 
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.app.App;
-import com.example.frankjunior.taidoido.connection.GetPostsRequest;
 import com.example.frankjunior.taidoido.controller.RequestController;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.PostDetailActivity;
-import com.example.frankjunior.taidoido.ui.adapter.RecentPostListAdapter;
+import com.example.frankjunior.taidoido.ui.adapter.PostListAdapter;
 import com.example.frankjunior.taidoido.util.Util;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 public class PostsSearchFragment extends Fragment implements
-        RecentPostListAdapter.OnClickPostListener,
+        PostListAdapter.OnClickPostListener,
         BaseFragment.ConnectionListener {
 
     private static final String EXTRA_QUERY = "extra_query";
@@ -47,7 +46,7 @@ public class PostsSearchFragment extends Fragment implements
     private final int WITHOUT_CONNECTION = 3;
     private final int FIRST_PAGE = 1;
     private SearchTask mTask;
-    private RecentPostListAdapter mAdapter;
+    private PostListAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private TextView mTextMensagem;
     private ProgressBar mProgressBar;
@@ -115,7 +114,7 @@ public class PostsSearchFragment extends Fragment implements
         mRecyclerView.setLayoutManager(layoutManager);
         PaginationHandle();
 
-        mAdapter = new RecentPostListAdapter(getActivity(), mPostList);
+        mAdapter = new PostListAdapter(getActivity(), mPostList);
         mAdapter.addOnClickPostListener(PostsSearchFragment.this);
         mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
 
@@ -193,7 +192,7 @@ public class PostsSearchFragment extends Fragment implements
 
                 private boolean canScrollerLastItens() {
                     // Se chegou na ultima pagina, retorne false
-                    if (mRecentPostsCurrentPage < GetPostsRequest.getTotalPages()) {
+                    if (mRecentPostsCurrentPage < mRequestController.getTotalPages()) {
                         return (totalVisibleItem + firstVisiblesItem) >= totalItemCount;
                     } else {
                         return false;
@@ -202,7 +201,7 @@ public class PostsSearchFragment extends Fragment implements
 
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
-                    GetPostsRequest.setPageNumber(mRecentPostsCurrentPage);
+                    mRequestController.setPageNumber(mRecentPostsCurrentPage);
                     isPagination = true;
                     dispararTask();
                     mLoading = true;
@@ -234,7 +233,7 @@ public class PostsSearchFragment extends Fragment implements
         isPagination = false;
         mPostList.clear();
         mRecentPostsCurrentPage = FIRST_PAGE;
-        GetPostsRequest.setPageNumber(FIRST_PAGE);
+        mRequestController.setPageNumber(FIRST_PAGE);
     }
 
     private void addPaginationLoading() {
@@ -305,7 +304,7 @@ public class PostsSearchFragment extends Fragment implements
         @Override
         protected List<Post> doInBackground(String... params) {
             String query = params[0];
-            return mRequestController.loadPosts(query);
+            return mRequestController.loadSearchedPosts(query);
         }
 
         @Override

@@ -19,10 +19,13 @@ import android.view.Window;
 import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
 import com.example.frankjunior.taidoido.ui.fragment.NavigationDrawerFragment;
-import com.example.frankjunior.taidoido.ui.fragment.RecentPostsListFragment;
+import com.example.frankjunior.taidoido.ui.fragment.PostsListFragment;
 import com.example.frankjunior.taidoido.util.MyLog;
+
+import java.util.List;
 
 /**
  * Created by frankjunior on 25/02/16.
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private static final int DURATION = 10000;
     private DrawerLayout mDrawerLayout;
+    private List<Category> mCategories;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         // se a ListView do NavigationDrawer não foi carregada ainda, carregue a tela padrão: RecentPostListFragment
         // ou seja, essa é a tela padrão, que abre assim que o app for aberto.
         if (drawerListView == null) {
-            fragment = RecentPostsListFragment.newInstance();
+            fragment = PostsListFragment.newInstance(null);
             // se não... carregue a tela do item clicado
         } else {
             DrawerListItem selectedDrawerListItem = (DrawerListItem) drawerListView.getItemAtPosition(position);
@@ -65,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             }
         }
         changeScreen(fragment);
+    }
+
+    @Override
+    public void onGetCategoriesList(List<Category> categories) {
+        mCategories = categories;
     }
 
     @Override
@@ -87,9 +97,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * Sendo assim, a Toolbar é configurada pra cada fragment através desse método
      */
     private void customizeToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
@@ -103,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private Fragment getFragmentScreen(String selectedItem) {
         Fragment fragment = null;
         if (selectedItem.equals(NavigationDrawerFragment.RECENT_POSTS)) {
-            fragment = RecentPostsListFragment.newInstance();
+            fragment = PostsListFragment.newInstance(null);
+            mToolbar.setTitle(selectedItem);
         } else if (selectedItem.equals(NavigationDrawerFragment.FAVORITES)) {
             MyLog.print("cliquei em Favorites");
         } else if (selectedItem.equals(NavigationDrawerFragment.SETTINGS)) {
@@ -111,7 +122,22 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         } else if (selectedItem.equals(NavigationDrawerFragment.ABOUT)) {
             MyLog.print("cliquei em About");
         } else {
-            MyLog.print("cliquei na categoria: " + selectedItem);
+            fragment = categoriesClickHandle(selectedItem);
+        }
+        return fragment;
+    }
+
+    private Fragment categoriesClickHandle(String selectedItem) {
+        Fragment fragment = null;
+        if (mCategories != null) {
+            for (int i = 0; i < mCategories.size(); i++) {
+                String categoryTitle = mCategories.get(i).getTitle();
+                if (categoryTitle.equals(selectedItem)) {
+                    fragment = PostsListFragment.newInstance(mCategories.get(i).getId());
+                    mToolbar.setTitle(selectedItem);
+                    break;
+                }
+            }
         }
         return fragment;
     }
