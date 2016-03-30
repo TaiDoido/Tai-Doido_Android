@@ -16,7 +16,8 @@ import java.util.List;
 public class RequestController {
 
     private static final String BLOG_URL = App.getContext().getString(R.string.tai_doido_url);
-
+    private static final int INVALID_PAGE = 0;
+    private final int FIRST_PAGE = 1;
     private GetCategoriesRequest mGetCategoriesRequest;
     private GetPostsRequest mGetPostsRequest;
     private int mPageNumber;
@@ -62,8 +63,8 @@ public class RequestController {
      * @param pageNumber - numero da pagina
      */
     public void setPageNumber(int pageNumber) {
-        if (pageNumber <= 0) {
-            pageNumber = 1;
+        if (pageNumber <= INVALID_PAGE) {
+            pageNumber = FIRST_PAGE;
         }
         mPageNumber = pageNumber;
     }

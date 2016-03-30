@@ -52,7 +52,7 @@ public class PostsListFragment extends BaseFragment implements
     private SwipeRefreshLayout swipeContainer;
     private boolean mLoading = false;
     private boolean isPagination = false;
-    private int mRecentPostsCurrentPage = FIRST_PAGE;
+    private int mPostsCurrentPage = FIRST_PAGE;
     private RequestController mRequestController;
     private LinearLayout mRootPostsList;
     private boolean isPaused = false;
@@ -193,7 +193,7 @@ public class PostsListFragment extends BaseFragment implements
 
                 private boolean canScrollerLastItens() {
                     // Se chegou na ultima pagina, retorne false
-                    if (mRecentPostsCurrentPage < mRequestController.getTotalPages()) {
+                    if (mPostsCurrentPage < mRequestController.getTotalPages()) {
                         return (totalVisibleItem + firstVisiblesItem) >= totalItemCount;
                     } else {
                         return false;
@@ -202,7 +202,7 @@ public class PostsListFragment extends BaseFragment implements
 
                 private void onScrolledToLastItem() {
                     addPaginationLoading();
-                    mRequestController.setPageNumber(mRecentPostsCurrentPage);
+                    mRequestController.setPageNumber(mPostsCurrentPage);
                     isPagination = true;
                     dispararTask();
                     mLoading = true;
@@ -233,12 +233,12 @@ public class PostsListFragment extends BaseFragment implements
     private void resetRequest() {
         isPagination = false;
         mPostList.clear();
-        mRecentPostsCurrentPage = FIRST_PAGE;
+        mPostsCurrentPage = FIRST_PAGE;
         mRequestController.setPageNumber(FIRST_PAGE);
     }
 
     private void addPaginationLoading() {
-        mRecentPostsCurrentPage++;
+        mPostsCurrentPage++;
         mPostList.add(mPostList.size(), null);
         mAdapter.notifyItemInserted(Util.getLastPositionFromList(mPostList));
         mRecyclerView.swapAdapter(mAdapter, false);
@@ -293,7 +293,7 @@ public class PostsListFragment extends BaseFragment implements
     }
 
     /**
-     * AsyncTask pra pegar os Recent Posts
+     * AsyncTask pra pegar os Posts
      */
     class PostTask extends AsyncTask<Void, Void, List<Post>> {
 
