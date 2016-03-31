@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.controller.RequestController;
+import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.PostDetailActivity;
 import com.example.frankjunior.taidoido.ui.adapter.PostListAdapter;
@@ -36,9 +37,16 @@ public class PostsListFragment extends BaseFragment implements
         PostListAdapter.OnClickPostListener,
         BaseFragment.ConnectionListener {
 
+    // chaves passada pelo NewInstance
     private static final String KEY_CATEGORY_ID = "category_id";
-    private static final String KEY_CATEGORY_TITLE = "category_title";
+    private static final String KEY_SEARCHED_QUERY = "searched_query";
+    // constantes para definir o tipo de tela que vai ser carregada
+    private static final int TYPE_RECENT_POSTS = 0;
+    private static final int TYPE_CATEGORY_POSTS = 1;
+    private static final int TYPE_SEARCHED_POSTS = 2;
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
+    private static int mTypeScreen;
+    // Constantes para o Progress
     private final int LOADING = 0;
     private final int ERROR = 1;
     private final int INVSISIBLE = 2;
@@ -57,15 +65,32 @@ public class PostsListFragment extends BaseFragment implements
     private LinearLayout mRootPostsList;
     private boolean isPaused = false;
     private String mCategoryId;
+    private String mSearchedQuery;
 
-    public static PostsListFragment newInstance(String categoryId) {
+    // Singleton pra carregar os posts por categoria
+    public static PostsListFragment newInstance(Category category) {
+        mTypeScreen = TYPE_CATEGORY_POSTS;
         PostsListFragment fragment = new PostsListFragment();
-        if (categoryId != null) {
-            Bundle bundle = new Bundle();
-            bundle.putString(KEY_CATEGORY_ID, categoryId);
-            fragment.setArguments(bundle);
-        }
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_CATEGORY_ID, category.getId());
+        fragment.setArguments(bundle);
         return fragment;
+    }
+
+    // Singleton pra carregar os searched posts
+    public static PostsListFragment newInstance(String query) {
+        mTypeScreen = TYPE_SEARCHED_POSTS;
+        PostsListFragment fragment = new PostsListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_SEARCHED_QUERY, query);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    // Singleton pra carregar os RecentPosts
+    public static PostsListFragment newInstance() {
+        mTypeScreen = TYPE_RECENT_POSTS;
+        return new PostsListFragment();
     }
 
     @Override
@@ -73,16 +98,16 @@ public class PostsListFragment extends BaseFragment implements
         super.onCreate(savedInstanceState);
         mRequestController = new RequestController();
         setConnectionListener(this);
+        if (getArguments() != null) {
+            Bundle arguments = getArguments();
+            mCategoryId = arguments.getString(KEY_CATEGORY_ID);
+            mSearchedQuery = arguments.getString(KEY_SEARCHED_QUERY);
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getArguments() != null) {
-            Bundle arguments = getArguments();
-            mCategoryId = arguments.getString(KEY_CATEGORY_ID);
-        }
-
         View view = inflater.inflate(R.layout.fragment_posts_list, container, false);
         mRootPostsList = (LinearLayout) view.findViewById(R.id.rootPostsList);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
@@ -304,11 +329,17 @@ public class PostsListFragment extends BaseFragment implements
 
         @Override
         protected List<Post> doInBackground(Void... param) {
-            List<Post> posts;
-            if (mCategoryId == null) {
-                posts = mRequestController.loadRecentPosts();
-            } else {
-                posts = mRequestController.loadCategoryPosts(mCategoryId);
+            List<Post> posts = null;
+            switch (mTypeScreen) {
+                case TYPE_RECENT_POSTS:
+                    posts = mRequestController.loadRecentPosts();
+                    break;
+                case TYPE_CATEGORY_POSTS:
+                    posts = mRequestController.loadCategoryPosts(mCategoryId);
+                    break;
+                case TYPE_SEARCHED_POSTS:
+                    posts = mRequestController.loadSearchedPosts(mSearchedQuery);
+                    break;
             }
             return posts;
         }

@@ -19,16 +19,6 @@ public abstract class BaseFragment extends Fragment {
     private ConnectionBroadcast connectionBroadcast;
 
     @Override
-    public void onAttach(Context ctx) {
-        super.onAttach(ctx);
-        try {
-            mCallbacks = (MainActivity) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(ctx.toString() + " must be " + MainActivity.class.getSimpleName());
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         connectionBroadcast = new ConnectionBroadcast();

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         // se a ListView do NavigationDrawer não foi carregada ainda, carregue a tela padrão: RecentPostListFragment
         // ou seja, essa é a tela padrão, que abre assim que o app for aberto.
         if (drawerListView == null) {
-            fragment = PostsListFragment.newInstance(null);
+            fragment = PostsListFragment.newInstance();
             // se não... carregue a tela do item clicado
         } else {
             DrawerListItem selectedDrawerListItem = (DrawerListItem) drawerListView.getItemAtPosition(position);
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private Fragment getFragmentScreen(String selectedItem) {
         Fragment fragment = null;
         if (selectedItem.equals(NavigationDrawerFragment.RECENT_POSTS)) {
-            fragment = PostsListFragment.newInstance(null);
+            fragment = PostsListFragment.newInstance();
             mToolbar.setTitle(selectedItem);
         } else if (selectedItem.equals(NavigationDrawerFragment.FAVORITES)) {
             MyLog.print("cliquei em Favorites");
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             for (int i = 0; i < mCategories.size(); i++) {
                 String categoryTitle = mCategories.get(i).getTitle();
                 if (categoryTitle.equals(selectedItem)) {
-                    fragment = PostsListFragment.newInstance(mCategories.get(i).getId());
+                    fragment = PostsListFragment.newInstance(mCategories.get(i));
                     mToolbar.setTitle(selectedItem);
                     break;
                 }

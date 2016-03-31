@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.example.frankjunior.taidoido.R;
-import com.example.frankjunior.taidoido.ui.fragment.PostsSearchFragment;
+import com.example.frankjunior.taidoido.ui.fragment.PostsListFragment;
 import com.example.frankjunior.taidoido.util.MyLog;
 import com.example.frankjunior.taidoido.util.Util;
 
@@ -41,7 +41,7 @@ public class PostsSearchActivity extends BaseActivity {
             MyLog.print("Searching for:" + query);
 
             mToolbar.setTitle(query);
-            changeFragment(PostsSearchFragment.newInstance(query));
+            changeFragment(PostsListFragment.newInstance(query));
         }
     }
 
