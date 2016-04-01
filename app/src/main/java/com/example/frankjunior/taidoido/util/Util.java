@@ -4,9 +4,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +32,10 @@ public class Util {
     private static final String YOUTUBE = "youtube";
     private static final String PATTERN = "(?:embed\\/|v=)([\\w-]+)";
     private static final int BUFFER_SIZE = 1024;
+
+    // Sql comments begin with two consecutive "-" characters
+    private static final String REG_COMMENT_EXPRESSION = "--";
+    private static final String REG_EXPRESSION = ";";
 
     private Util() {
     }
@@ -92,6 +99,43 @@ public class Util {
             MyLog.printError("error", e);
         }
         return newHtml;
+    }
+
+    /**
+     * Split in strings the content of sql files.
+     *
+     * @param context
+     * @param fileNames
+     * @return
+     */
+    public static String[] getStatementSql(Context context, final String fileNames) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        InputStream inputStream;
+        BufferedReader sqlFile = null;
+        try {
+            inputStream = context.getAssets().open(fileNames);
+            final InputStreamReader reader = new InputStreamReader(inputStream,
+                    Charset.defaultCharset());
+            sqlFile = new BufferedReader(reader);
+            String buffer;
+            while ((buffer = sqlFile.readLine()) != null) {
+                //Ignore comment in sql
+                if (!buffer.startsWith(REG_COMMENT_EXPRESSION)) {
+                    stringBuilder.append(buffer);
+                }
+            }
+        } catch (final IOException e) {
+            MyLog.printError("Error opening SQL file", e);
+        } finally {
+            if (sqlFile != null) {
+                try {
+                    sqlFile.close();
+                } catch (final IOException e) {
+                    MyLog.printError("Error closing SQL file", e);
+                }
+            }
+        }
+        return stringBuilder.toString().split(REG_EXPRESSION);
     }
 
      /*
@@ -162,4 +206,5 @@ public class Util {
         }
         return newHtml;
     }
+
 }

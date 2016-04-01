@@ -14,6 +14,18 @@ public class Post implements Serializable {
     private String date;
     private String content;
     private String url;
+    private boolean favorite;
+
+    public Post(String id, String title, String image, String author, String date, String content, String url, boolean favorite) {
+        this.id = id;
+        this.title = title;
+        this.image = image;
+        this.author = author;
+        this.date = date;
+        this.content = content;
+        this.url = url;
+        this.favorite = favorite;
+    }
 
     public String getId() {
         return id;
@@ -69,5 +81,13 @@ public class Post implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 }

@@ -129,6 +129,7 @@ public class GetPostsRequest {
         post.setDate(date);
         post.setContent(content);
         post.setUrl(url);
+        post.setFavorite(false);
         return post;
     }
 }
