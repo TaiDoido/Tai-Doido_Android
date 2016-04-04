@@ -47,7 +47,7 @@ public class PostDetailFragment extends Fragment implements SlidingPaneLayout.Pa
         });
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        String data = Util.formatHtml(getActivity(), mPost.getContent());
+        String data = Util.formatHtml(getActivity(), mPost.getContent(), mPost.getTitle());
         mWebView.loadDataWithBaseURL(BASE_URL, data, MIME_TYPE, ENCONDING, HISTORY_URL);
 
         return view;

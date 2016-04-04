@@ -26,6 +26,7 @@ public class Util {
     private static final int INVALID_POSITION = -1;
     private static final String TEMPLATE_HTML = "template.html";
     private static final String CONTENT = "#CONTEUDO#";
+    private static final String TITLE = "#TITLE#";
     private static final String IFRAME_OPEN_TAG = "<iframe";
     private static final String IFRAME_CLOSE_TAG = "</iframe>";
     private static final String CLOSE_TAG = "/>";
@@ -87,13 +88,14 @@ public class Util {
         return (info != null && info.isConnected());
     }
 
-    public static String formatHtml(Context ctx, String html) {
+    public static String formatHtml(Context ctx, String html, String title) {
         String newHtml = html;
         newHtml = findYoutubeTag(newHtml);
         try {
             InputStream inputStream = ctx.getAssets().open(TEMPLATE_HTML);
             String template = streamToString(inputStream);
-            newHtml = template.replaceAll(CONTENT, newHtml);
+            newHtml = template.replaceAll(CONTENT, newHtml)
+                    .replaceAll(TITLE, title);
             inputStream.close();
         } catch (IOException e) {
             MyLog.printError("error", e);
