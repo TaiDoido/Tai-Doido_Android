@@ -11,29 +11,32 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.data.PostDAO;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.fragment.PostDetailFragment;
 import com.squareup.picasso.Picasso;
 
 public class PostDetailActivity extends BaseActivity {
 
-    public static final String EXTRA_POST = "extra_object";
+    public static final String EXTRA_POST = "extra_post_id";
     private static final int MENU_HOME = android.R.id.home;
     private static final int MENU_FAVORITE = R.id.menu_favorite;
-    private Post mPost;
     private ShareActionProvider mShareActionProvider;
+    private PostDAO mDao;
+    private Post mPost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_details);
+        mDao = PostDAO.getInstance();
 
         Intent intent = getIntent();
         if (intent != null) {
-            mPost = (Post) intent.getSerializableExtra(EXTRA_POST);
+            String postId = intent.getStringExtra(EXTRA_POST);
+            mPost = mDao.getPost(postId);
             customizeToolbar();
             changeFragment(PostDetailFragment.newInstance(mPost));
         } else {
@@ -45,6 +48,10 @@ public class PostDetailActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_post_detail, menu);
         actionShareButton(menu);
+
+        menu.findItem(R.id.menu_favorite).setIcon(mPost.isFavorite() ?
+                R.drawable.ic_action_favorite_menu :
+                R.drawable.ic_action_favorite_menu_border);
         return true;
     }
 
@@ -55,7 +62,7 @@ public class PostDetailActivity extends BaseActivity {
                 ActivityCompat.finishAfterTransition(PostDetailActivity.this);
                 break;
             case MENU_FAVORITE:
-                Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
+                menuFavoriteAction(item);
                 break;
             default:
                 break;
@@ -68,6 +75,7 @@ public class PostDetailActivity extends BaseActivity {
      *   Métodos private
      **********************************************
      */
+
     /**
      * Customize the toolbar
      */
@@ -114,4 +122,17 @@ public class PostDetailActivity extends BaseActivity {
         return shareIntent;
     }
 
+    private void menuFavoriteAction(MenuItem item) {
+        mPost.setFavorite(!mPost.isFavorite());
+
+        int icon;
+        if (mPost.isFavorite()) {
+            icon = R.drawable.ic_action_favorite_menu;
+            mDao.update(mPost);
+        } else {
+            icon = R.drawable.ic_action_favorite_menu_border;
+            mDao.update(mPost);
+        }
+        item.setIcon(icon);
+    }
 }

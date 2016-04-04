@@ -96,7 +96,6 @@ public class GetPostsRequest {
      * @return - Model Post
      */
     private Post jsonRecentPostsParser(JSONObject jsonEntry) {
-        Post post = new Post();
         String id = null;
         String title = null;
         String author = null;
@@ -122,14 +121,9 @@ public class GetPostsRequest {
             //TODO: descomentar essa linha quando estiver no cenário real
 //            MyLog.printError("Item do Json não existe", e);
         }
-        post.setId(id);
-        post.setTitle(title);
-        post.setImage(image);
-        post.setAuthor(author);
-        post.setDate(date);
-        post.setContent(content);
-        post.setUrl(url);
-        post.setFavorite(false);
+
+        boolean favorite = false;
+        Post post = new Post(id, title, image, author, date, content, url, favorite);
         return post;
     }
 }

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.app.App;
 import com.example.frankjunior.taidoido.controller.RequestController;
+import com.example.frankjunior.taidoido.data.PostDAO;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.Post;
 import com.example.frankjunior.taidoido.ui.PostDetailActivity;
@@ -37,13 +38,13 @@ public class PostsListFragment extends BaseFragment implements
         PostListAdapter.OnClickPostListener,
         BaseFragment.ConnectionListener {
 
+    // constantes para definir o tipo de tela que vai ser carregada
+    public static final int TYPE_RECENT_POSTS = 0;
+    public static final int TYPE_CATEGORY_POSTS = 1;
+    public static final int TYPE_SEARCHED_POSTS = 2;
     // chaves passada pelo NewInstance
     private static final String KEY_CATEGORY_ID = "category_id";
     private static final String KEY_SEARCHED_QUERY = "searched_query";
-    // constantes para definir o tipo de tela que vai ser carregada
-    private static final int TYPE_RECENT_POSTS = 0;
-    private static final int TYPE_CATEGORY_POSTS = 1;
-    private static final int TYPE_SEARCHED_POSTS = 2;
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
     private static int mTypeScreen;
     // Constantes para o Progress
@@ -66,6 +67,7 @@ public class PostsListFragment extends BaseFragment implements
     private boolean isPaused = false;
     private String mCategoryId;
     private String mSearchedQuery;
+    private PostDAO mDao;
 
     // Singleton pra carregar os posts por categoria
     public static PostsListFragment newInstance(Category category) {
@@ -97,6 +99,7 @@ public class PostsListFragment extends BaseFragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRequestController = new RequestController();
+        mDao = PostDAO.getInstance();
         setConnectionListener(this);
         if (getArguments() != null) {
             Bundle arguments = getArguments();
@@ -180,9 +183,9 @@ public class PostsListFragment extends BaseFragment implements
       **********************************************
       */
     @Override
-    public void onClickPost(View v, int position, Post post) {
+    public void onClickPost(View v, int position, String postId) {
         Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-        intent.putExtra(PostDetailActivity.EXTRA_POST, post);
+        intent.putExtra(PostDetailActivity.EXTRA_POST, postId);
 
         Pair<View, String> p1 = Pair.create(v.findViewById(R.id.imgPost), getString(R.string.post_image_transition_name));
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1);
@@ -352,6 +355,7 @@ public class PostsListFragment extends BaseFragment implements
                 if (isPagination) {
                     removePaginationLoading();
                 }
+                mDao.insertAllPosts(posts);
                 mPostList.addAll(posts);
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 swipeContainer.setRefreshing(false);

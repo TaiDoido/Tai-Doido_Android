@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tb_posts (
     _id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-    post_id               TEXT NOT NULL,
+    post_id             TEXT NOT NULL,
     title               TEXT NOT NULL,
     author              TEXT NOT NULL,
     last_update         TEXT NOT NULL,
