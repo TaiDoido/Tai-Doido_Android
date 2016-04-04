@@ -21,6 +21,7 @@ import android.widget.ListView;
 import com.example.frankjunior.taidoido.R;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
+import com.example.frankjunior.taidoido.ui.fragment.FavoriteListFragment;
 import com.example.frankjunior.taidoido.ui.fragment.NavigationDrawerFragment;
 import com.example.frankjunior.taidoido.ui.fragment.PostsListFragment;
 import com.example.frankjunior.taidoido.util.MyLog;
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             fragment = PostsListFragment.newInstance();
             mToolbar.setTitle(selectedItem);
         } else if (selectedItem.equals(NavigationDrawerFragment.FAVORITES)) {
-            MyLog.print("cliquei em Favorites");
+            fragment = FavoriteListFragment.newInstance();
         } else if (selectedItem.equals(NavigationDrawerFragment.SETTINGS)) {
             MyLog.print("cliquei em Settings");
         } else if (selectedItem.equals(NavigationDrawerFragment.ABOUT)) {

@@ -96,7 +96,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public interface OnClickPostListener {
-        void onClickPost(View v, int position, String post);
+        void onClickPost(View v, int position, String postId);
     }
 
     /*
