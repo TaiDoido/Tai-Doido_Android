@@ -31,7 +31,7 @@ public class PostDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_details);
-        mDao = PostDAO.getInstance();
+        mDao = PostDAO.getInstance(this);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -122,9 +122,13 @@ public class PostDetailActivity extends BaseActivity {
         return shareIntent;
     }
 
+    /**
+     * método responsável pela ação de Favoritar um post.
+     *
+     * @param item
+     */
     private void menuFavoriteAction(MenuItem item) {
         mPost.setFavorite(!mPost.isFavorite());
-
         int icon;
         if (mPost.isFavorite()) {
             icon = R.drawable.ic_action_favorite_menu;

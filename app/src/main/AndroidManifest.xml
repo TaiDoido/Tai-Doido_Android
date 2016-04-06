@@ -39,6 +39,11 @@
                 android:resource="@xml/search_posts" />
         </activity>
 
+        <provider
+            android:name=".data.PostProvider"
+            android:authorities="com.example.frankjunior.taidoido.provider"
+            android:enabled="true"
+            android:exported="true"></provider>
     </application>
 
 </manifest>

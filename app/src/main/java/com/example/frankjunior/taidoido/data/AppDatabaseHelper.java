@@ -14,7 +14,7 @@ import com.example.frankjunior.taidoido.util.Util;
  */
 public class AppDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "taidoido_database";
+    private static final String DATABASE_NAME = "taidoido_database.db";
     private static final int VERSION = 1;
     private static final String SQL_CREATE = "create_script_taidoido.sql";
 

@@ -45,7 +45,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     public void onClick(View view) {
                         if (mListener != null) {
                             PostViewHolder vh = (PostViewHolder) view.getTag();
-                            int position = vh.getPosition();
+                            int position = vh.getLayoutPosition();
                             mListener.onClickPost(view, position, mPostList.get(position).getId());
                         }
                     }

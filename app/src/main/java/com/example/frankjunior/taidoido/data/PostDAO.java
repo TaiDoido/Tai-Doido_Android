@@ -1,8 +1,10 @@
 package com.example.frankjunior.taidoido.data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 
 import com.example.frankjunior.taidoido.model.Post;
 
@@ -15,108 +17,64 @@ import java.util.List;
 public class PostDAO {
     private static PostDAO instance;
     private AppDatabaseHelper mHelper;
+    private Context mContext;
 
-    private PostDAO() {
+    private PostDAO(Context context) {
         mHelper = new AppDatabaseHelper();
+        mContext = context;
     }
 
-    public static PostDAO getInstance() {
+    public static PostDAO getInstance(Context context) {
         if (instance == null) {
-            instance = new PostDAO();
+            instance = new PostDAO(context);
         }
         return instance;
     }
 
     public long insert(Post post) {
-        SQLiteDatabase database = mHelper.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(PostContract.POST_ID, post.getId());
-        cv.put(PostContract.TITLE, post.getTitle());
-        cv.put(PostContract.IMAGE, post.getImage());
-        cv.put(PostContract.AUTHOR, post.getAuthor());
-        cv.put(PostContract.LAST_UPDATE, post.getDate());
-        cv.put(PostContract.CONTENT, post.getContent());
-        cv.put(PostContract.URL, post.getUrl());
-        cv.put(PostContract.FAVORITE, post.isFavorite());
-
-        long id = database.insert(PostContract.TABLE_NAME, null, cv);
-        database.close();
+        Uri uri = mContext.getContentResolver().insert(PostProvider.CONTENT_URI, getValues(post));
+        long id = Long.parseLong(uri.getLastPathSegment());
+        if (id != -1) {
+            post.setId(String.valueOf(id));
+        }
         return id;
     }
 
-    public long insertAllPosts(List<Post> post) {
-        SQLiteDatabase database = mHelper.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        long id = -1;
-        for (int i = 0; i < post.size(); i++) {
-            cv.put(PostContract.POST_ID, post.get(i).getId());
-            cv.put(PostContract.TITLE, post.get(i).getTitle());
-            cv.put(PostContract.IMAGE, post.get(i).getImage());
-            cv.put(PostContract.AUTHOR, post.get(i).getAuthor());
-            cv.put(PostContract.LAST_UPDATE, post.get(i).getDate());
-            cv.put(PostContract.CONTENT, post.get(i).getContent());
-            cv.put(PostContract.URL, post.get(i).getUrl());
-            cv.put(PostContract.FAVORITE, post.get(i).isFavorite());
-            id = database.insert(PostContract.TABLE_NAME, null, cv);
+    public void insertAllPosts(List<Post> postList) {
+        for (int i = 0; i < postList.size(); i++) {
+            Post post = postList.get(i);
+            Uri uri = mContext.getContentResolver().insert(PostProvider.CONTENT_URI, getValues(post));
         }
-        database.close();
-        return id;
     }
 
     public int update(Post post) {
-        SQLiteDatabase database = mHelper.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        cv.put(PostContract.POST_ID, post.getId());
-        cv.put(PostContract.TITLE, post.getTitle());
-        cv.put(PostContract.IMAGE, post.getImage());
-        cv.put(PostContract.AUTHOR, post.getAuthor());
-        cv.put(PostContract.LAST_UPDATE, post.getDate());
-        cv.put(PostContract.CONTENT, post.getContent());
-        cv.put(PostContract.URL, post.getUrl());
-        cv.put(PostContract.FAVORITE, post.isFavorite());
-
-        String[] whereArgs = {String.valueOf(post.getId())};
-        String whereClause = PostContract.POST_ID + " = ?";
-        int linhasAfetadas = database.update(PostContract.TABLE_NAME, cv, whereClause, whereArgs);
-        database.close();
+        Uri uri = Uri.withAppendedPath(PostProvider.CONTENT_URI, post.getId());
+        int linhasAfetadas = mContext.getContentResolver().update(uri, getValues(post), null, null);
         return linhasAfetadas;
     }
 
     public int delete(String postId) {
-        SQLiteDatabase database = mHelper.getWritableDatabase();
-        String[] whereArgs = {String.valueOf(postId)};
-        String whereClause = PostContract.POST_ID + " = ?";
-        int linhasAfetadas = database.delete(PostContract.TABLE_NAME, whereClause, whereArgs);
-        database.close();
+        Uri uri = Uri.withAppendedPath(PostProvider.CONTENT_URI, postId);
+        int linhasAfetadas = mContext.getContentResolver().delete(uri, null, null);
         return linhasAfetadas;
     }
 
-    public void deleteAll() {
-        SQLiteDatabase database = mHelper.getWritableDatabase();
-        database.delete(PostContract.TABLE_NAME, null, null);
-        database.close();
+    // delete tudo que não seja Favorito (ou seja, cache)
+    public int deleteAllCache() {
+        Uri uri = PostProvider.CONTENT_URI;
+        String where = PostContract.FAVORITE + " = ?";
+        String[] selectionArgs = new String[]{"0"};
+        int linhasAfetadas = mContext.getContentResolver().delete(uri, where, selectionArgs);
+        return linhasAfetadas;
     }
 
-    public ArrayList<Post> getAllPosts(int typeScreen) {
+    public ArrayList<Post> getAllPosts() {
         ArrayList<Post> list = new ArrayList<>();
         SQLiteDatabase database = mHelper.getReadableDatabase();
         Post post;
-
         Cursor cursor = database.query(PostContract.TABLE_NAME, null, null, null, null, null, null);
-
         while (cursor.moveToNext()) {
-            String id = cursor.getString(cursor.getColumnIndex(PostContract.POST_ID));
-            String title = cursor.getString(cursor.getColumnIndex(PostContract.TITLE));
-            String image = cursor.getString(cursor.getColumnIndex(PostContract.IMAGE));
-            String author = cursor.getString(cursor.getColumnIndex(PostContract.AUTHOR));
-            String date = cursor.getString(cursor.getColumnIndex(PostContract.LAST_UPDATE));
-            String content = cursor.getString(cursor.getColumnIndex(PostContract.CONTENT));
-            String url = cursor.getString(cursor.getColumnIndex(PostContract.URL));
-            boolean favorite = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(PostContract.FAVORITE)));
-
-            post = new Post(id, title, image, author, date, content, url, favorite);
+            post = getPostFromCursor(cursor);
             list.add(post);
         }
         cursor.close();
@@ -125,14 +83,26 @@ public class PostDAO {
     }
 
     public Post getPost(String postId) {
+        Uri uri = Uri.withAppendedPath(PostProvider.CONTENT_URI, postId);
+        String selection = PostContract.POST_ID + " = ?";
+        String[] selectionArgs = new String[]{postId};
+        Cursor cursor = mContext.getContentResolver().query(uri, null, selection, selectionArgs, null);
+        Post post = getPostFromCursor(cursor);
+        return post;
+    }
+
+    public ArrayList<Post> postListFromCursor(Cursor cursor) {
+        ArrayList<Post> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Post post = getPostFromCursor(cursor);
+            list.add(post);
+        }
+        cursor.close();
+        return list;
+    }
+
+    public Post getPostFromCursor(Cursor cursor) {
         Post resultPost = null;
-        SQLiteDatabase database = mHelper.getReadableDatabase();
-        String sql = "SELECT * FROM " + PostContract.TABLE_NAME + " WHERE " + PostContract.POST_ID + " = ?";
-        String[] args = new String[]{postId};
-
-        //Create the query on ButlerInfo table
-        Cursor cursor = database.rawQuery(sql, args);
-
         if (cursor.moveToFirst()) {
             String id = cursor.getString(cursor.getColumnIndex(PostContract.POST_ID));
             String title = cursor.getString(cursor.getColumnIndex(PostContract.TITLE));
@@ -147,10 +117,22 @@ public class PostDAO {
                 favorite = true;
             }
             resultPost = new Post(id, title, image, author, date, content, url, favorite);
-            cursor.close();
-            database.close();
         }
+        cursor.close();
         return resultPost;
+    }
+
+    private ContentValues getValues(Post post) {
+        ContentValues cv = new ContentValues();
+        cv.put(PostContract.POST_ID, post.getId());
+        cv.put(PostContract.TITLE, post.getTitle());
+        cv.put(PostContract.IMAGE, post.getImage());
+        cv.put(PostContract.AUTHOR, post.getAuthor());
+        cv.put(PostContract.LAST_UPDATE, post.getDate());
+        cv.put(PostContract.CONTENT, post.getContent());
+        cv.put(PostContract.URL, post.getUrl());
+        cv.put(PostContract.FAVORITE, post.isFavorite());
+        return cv;
     }
 
 }

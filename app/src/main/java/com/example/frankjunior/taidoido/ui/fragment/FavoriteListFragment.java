@@ -1,41 +1,36 @@
 package com.example.frankjunior.taidoido.ui.fragment;
 
-import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.frankjunior.taidoido.R;
-import com.example.frankjunior.taidoido.app.App;
+import com.example.frankjunior.taidoido.data.PostContract;
+import com.example.frankjunior.taidoido.data.PostCursorAdapter;
 import com.example.frankjunior.taidoido.data.PostDAO;
+import com.example.frankjunior.taidoido.data.PostProvider;
 import com.example.frankjunior.taidoido.model.Post;
-import com.example.frankjunior.taidoido.ui.PostDetailActivity;
-import com.example.frankjunior.taidoido.ui.adapter.PostListAdapter;
 
 import java.util.ArrayList;
-
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
-import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
  * Created by frankjunior on 04/04/16.
  */
-public class FavoriteListFragment extends Fragment implements PostListAdapter.OnClickPostListener {
+public class FavoriteListFragment extends ListFragment implements
+        PostCursorAdapter.RecyclerViewClickListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static ArrayList<Post> mPostList = new ArrayList<Post>();
     private PostDAO mDao;
-    private RecyclerView mRecyclerView;
+    private ListView mListView;
     private TextView mTextMensagem;
-    private PostListAdapter mAdapter;
+    private PostCursorAdapter mAdapter;
 
     public static FavoriteListFragment newInstance() {
         FavoriteListFragment fragment = new FavoriteListFragment();
@@ -45,36 +40,55 @@ public class FavoriteListFragment extends Fragment implements PostListAdapter.On
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDao = PostDAO.getInstance();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_favorite_posts_list, container, false);
-        mTextMensagem = (TextView) view.findViewById(android.R.id.empty);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(new SlideInLeftAnimator());
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(App.getContext());
-        mRecyclerView.setLayoutManager(layoutManager);
-
-//        mPostList = mDao.getFavoritePost();
-
-        mAdapter = new PostListAdapter(getActivity(), mPostList);
-        mAdapter.addOnClickPostListener(FavoriteListFragment.this);
-        mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
-        return view;
+        mDao = PostDAO.getInstance(getActivity());
     }
 
     @Override
-    public void onClickPost(View v, int position, String postId) {
-        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-        intent.putExtra(PostDetailActivity.EXTRA_POST, postId);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        Pair<View, String> p1 = Pair.create(v.findViewById(R.id.imgPost), getString(R.string.post_image_transition_name));
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1);
-        ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
+        mAdapter = new PostCursorAdapter(getActivity(), null, this);
+        mListView = getListView();
+        setListAdapter(mAdapter);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getActivity(),
+                PostProvider.CONTENT_URI,
+                new String[]{
+                        PostContract.POST_ID,
+                        PostContract.TITLE,
+                        PostContract.IMAGE,
+                        PostContract.AUTHOR,
+                        PostContract.LAST_UPDATE,
+                        PostContract.CONTENT,
+                        PostContract.URL,
+                        PostContract.FAVORITE},
+                PostContract.FAVORITE + " = " + 1,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void OnRecyclerViewListClicked(View v, int position) {
+//        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+//        intent.putExtra(PostDetailActivity.EXTRA_POST, mPostList.get(position).getId());
+//
+//        Pair<View, String> p1 = Pair.create(v.findViewById(R.id.imgPost), getString(R.string.post_image_transition_name));
+//        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1);
+//        ActivityCompat.startActivity(getActivity(), intent, options.toBundle());
     }
 }

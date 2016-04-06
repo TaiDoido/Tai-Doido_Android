@@ -19,6 +19,7 @@ import android.view.Window;
 import android.widget.ListView;
 
 import com.example.frankjunior.taidoido.R;
+import com.example.frankjunior.taidoido.data.PostDAO;
 import com.example.frankjunior.taidoido.model.Category;
 import com.example.frankjunior.taidoido.model.DrawerListItem;
 import com.example.frankjunior.taidoido.ui.fragment.FavoriteListFragment;
@@ -37,12 +38,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private DrawerLayout mDrawerLayout;
     private List<Category> mCategories;
     private Toolbar mToolbar;
+    private PostDAO mDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setupAnimations();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mDao = PostDAO.getInstance(this);
         customizeToolbar();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -87,6 +90,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDao.deleteAllCache();
+    }
+
     /*
      **********************************************
      *   Métodos private
@@ -113,9 +122,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      */
     private Fragment getFragmentScreen(String selectedItem) {
         Fragment fragment = null;
+        mToolbar.setTitle(selectedItem);
         if (selectedItem.equals(NavigationDrawerFragment.RECENT_POSTS)) {
             fragment = PostsListFragment.newInstance();
-            mToolbar.setTitle(selectedItem);
         } else if (selectedItem.equals(NavigationDrawerFragment.FAVORITES)) {
             fragment = FavoriteListFragment.newInstance();
         } else if (selectedItem.equals(NavigationDrawerFragment.SETTINGS)) {
@@ -135,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 String categoryTitle = mCategories.get(i).getTitle();
                 if (categoryTitle.equals(selectedItem)) {
                     fragment = PostsListFragment.newInstance(mCategories.get(i));
-                    mToolbar.setTitle(selectedItem);
                     break;
                 }
             }

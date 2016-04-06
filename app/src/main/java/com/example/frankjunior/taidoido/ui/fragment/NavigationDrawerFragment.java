@@ -76,7 +76,7 @@ public class NavigationDrawerFragment extends BaseFragment implements BaseFragme
 
     // Construtor
     public NavigationDrawerFragment() {
-        mRequestController = new RequestController();
+        mRequestController = RequestController.getInstance();
     }
 
     @Override

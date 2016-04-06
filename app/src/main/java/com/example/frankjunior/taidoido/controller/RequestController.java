@@ -16,15 +16,23 @@ import java.util.List;
 public class RequestController {
 
     private static final String BLOG_URL = App.getContext().getString(R.string.tai_doido_url);
-    private static final int INVALID_PAGE = 0;
+    private static final int INVALID_PAGE = -1;
+    private static RequestController instance;
     private final int FIRST_PAGE = 1;
     private GetCategoriesRequest mGetCategoriesRequest;
     private GetPostsRequest mGetPostsRequest;
-    private int mPageNumber;
+    private int mPageNumber = INVALID_PAGE;
 
-    public RequestController() {
+    private RequestController() {
         mGetCategoriesRequest = new GetCategoriesRequest();
         mGetPostsRequest = new GetPostsRequest();
+    }
+
+    public static RequestController getInstance() {
+        if (instance == null) {
+            instance = new RequestController();
+        }
+        return instance;
     }
 
     /**
@@ -55,6 +63,10 @@ public class RequestController {
     public List<Category> loadCategoryList() {
         String categoryListJson = App.getContext().getString(R.string.get_categories_list_api, BLOG_URL);
         return mGetCategoriesRequest.loadCategoryList(categoryListJson);
+    }
+
+    public int getPageNumber() {
+        return mPageNumber;
     }
 
     /**

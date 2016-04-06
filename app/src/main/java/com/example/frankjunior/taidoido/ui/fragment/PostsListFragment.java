@@ -52,7 +52,10 @@ public class PostsListFragment extends BaseFragment implements
     private final int ERROR = 1;
     private final int INVSISIBLE = 2;
     private final int WITHOUT_CONNECTION = 3;
+
+    private final int INVALID_PAGE = -1;
     private final int FIRST_PAGE = 1;
+
     private PostTask mTask;
     private PostListAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -98,8 +101,11 @@ public class PostsListFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRequestController = new RequestController();
-        mDao = PostDAO.getInstance();
+        mRequestController = RequestController.getInstance();
+        mDao = PostDAO.getInstance(getActivity());
+        if (mRequestController.getPageNumber() != INVALID_PAGE) {
+            mPostsCurrentPage = mRequestController.getPageNumber();
+        }
         setConnectionListener(this);
         if (getArguments() != null) {
             Bundle arguments = getArguments();
@@ -125,6 +131,7 @@ public class PostsListFragment extends BaseFragment implements
             @Override
             public void onRefresh() {
                 showProgress(INVSISIBLE);
+                mPostList.clear();
                 resetRequest();
                 dispararTask();
             }
@@ -145,10 +152,11 @@ public class PostsListFragment extends BaseFragment implements
         mAdapter.addOnClickPostListener(PostsListFragment.this);
         mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mAdapter));
 
-        // aqui são as validações pra disparar a task
-        showProgress(LOADING);
         resetRequest();
-        dispararTask();
+        if (mPostList.isEmpty()) {
+            showProgress(LOADING);
+            dispararTask();
+        }
 
         return view;
     }
@@ -170,9 +178,11 @@ public class PostsListFragment extends BaseFragment implements
             if (!hasConnection) {
                 showConnectionSnackBar();
             } else {
-                showProgress(LOADING);
                 resetRequest();
-                dispararTask();
+                if (mPostList.isEmpty()) {
+                    showProgress(LOADING);
+                    dispararTask();
+                }
             }
         }
     }
@@ -247,9 +257,11 @@ public class PostsListFragment extends BaseFragment implements
                 .setAction(R.string.refresh, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showProgress(LOADING);
                         resetRequest();
-                        dispararTask();
+                        if (mPostList.isEmpty()) {
+                            showProgress(LOADING);
+                            dispararTask();
+                        }
                     }
                 }).show();
     }
@@ -260,9 +272,10 @@ public class PostsListFragment extends BaseFragment implements
      */
     private void resetRequest() {
         isPagination = false;
-        mPostList.clear();
-        mPostsCurrentPage = FIRST_PAGE;
-        mRequestController.setPageNumber(FIRST_PAGE);
+        if (mPostList.isEmpty()) {
+            mPostsCurrentPage = FIRST_PAGE;
+            mRequestController.setPageNumber(FIRST_PAGE);
+        }
     }
 
     private void addPaginationLoading() {
